@@ -24,14 +24,6 @@ start:
         mov     bx,1000h
         int     13h
 
-;;; Display the first byte of the sector we just loaded
-
-        mov     ah, 9           ; print
-        mov     al, [1000h]
-        mov     bx,7
-        mov     cx,4
-        int     10h
-
 ;;; Branch to it
 
         jmp     1000h

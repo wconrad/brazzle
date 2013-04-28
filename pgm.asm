@@ -10,18 +10,13 @@
 again:
         lodsb
         or  al,al
+hang:   
         jz  hang
 
         mov ah,0eh
-        xor bh,bh
+        xor bx,bx
         int 10h
         
         jmp again
 
 string: db 'Hello Cyberspace!',13,10,0
-
-hang:                       ; Hang!
-        jmp hang
-
-times 510-($-$$) db 0
-dw 0AA55h
