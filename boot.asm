@@ -13,11 +13,24 @@ start:
         mov ds, ax
         mov es, ax
 
-        mov ah, 9           ; Print "===="
-        mov al, '='         ;
-        mov bx, 7           ;
-        mov cx, 4           ;
-        int 10h             ;
+;;; Write a string
+
+        mov si, string
+
+again:  
+        mov al, [si]
+        inc si
+        or  al,al
+        jz  hang
+
+        mov ah,0eh
+        mov bh,0
+        mov bl,0
+        int 10h
+        
+        jmp again
+
+string: db 'Hello Cyberspace!',0
 
 hang:                       ; Hang!
         jmp hang
