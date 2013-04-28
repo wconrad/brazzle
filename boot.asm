@@ -17,20 +17,18 @@ start:
 
         mov si, string
 
-again:  
-        mov al, [si]
-        inc si
+again:
+        lodsb
         or  al,al
         jz  hang
 
         mov ah,0eh
-        mov bh,0
-        mov bl,0
+        xor bh,bh
         int 10h
         
         jmp again
 
-string: db 'Hello Cyberspace!',0
+string: db 'Hello Cyberspace!',13,10,0
 
 hang:                       ; Hang!
         jmp hang
