@@ -11,7 +11,9 @@
         jmp 07C0h:start     ; Goto segment 07C0
 
 start:
-        ; Update the segment registers
+
+;;; DS = ES = CS
+
         mov ax,cs
         mov ds,ax
         mov es,ax
@@ -48,22 +50,6 @@ start:
 
         jmp     0x1000
 
-;;; Say we're doing it
-        
-        ;; mov     si,pmode_msg
-        ;; call    message
-
-        ;; lidt    [pIDT]
-        ;; lgdt    [pGDT]
-
-        ;; mov     eax,cr0
-        ;; or      al,1
-        ;; mov     cr0,eax
-        ;; jmp     $+2
-        ;; nop
-        ;; nop 
-       
-        ret
 ;;; Display NULL terminated string at ds:si
         
 message:
