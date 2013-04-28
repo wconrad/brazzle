@@ -1,16 +1,16 @@
 .phony: build
-build: fd.img
+build: hd.img
 
 .phony: run
 run: build
-	qemu -fda fd.img
+	qemu -hda hd.img
 
 .phony: clean
 clean:
 	rm -f *.bin *.lst *.img
 
-fd.img: boot.bin pgm.bin
-	dd if=/dev/zero of=$@ bs=512 count=2880
+hd.img: boot.bin pgm.bin
+	qemu-img create -f raw $@ 10M
 	dd conv=notrunc bs=512 if=boot.bin of=$@
 	dd conv=notrunc bs=512 if=pgm.bin of=$@ seek=1
 

@@ -20,7 +20,7 @@ start:
         mov     ch,0            ; track
         mov     cl,2            ; sector
         mov     dh,0            ; head
-        mov     dl,0            ; drive
+        mov     dl,80h          ; drive
         mov     bx,1000h
         int     13h
 
