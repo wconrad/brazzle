@@ -36,7 +36,7 @@ start:
 ;;; Read sector from the drive
 
         mov     ah,2            ; read sectors from drive
-        mov     al,1            ; sector count
+        mov     al,10           ; sector count
         mov     ch,0            ; track
         mov     cl,2            ; sector
         mov     dh,0            ; head
@@ -44,21 +44,9 @@ start:
         mov     bx,0x1000
         int     0x13
 
-;;; Turn on the A20 address line.
-
-        call    enable_a20
-
-;;; Enter protected mode
-
-        call    enter_pmode
-
 ;;; Branch to it
 
         jmp     0x1000
-
-;;; Enter protected mode
-
-enter_pmode:
 
 ;;; Say we're doing it
         
@@ -76,31 +64,6 @@ enter_pmode:
         ;; nop 
        
         ret
-
-;;; Enable the A20 address line, so that all of memory can be
-;;; addressed.
-;;; 
-;;; There are many ways of doing this, and none of them work on all
-;;; systems throughout time.
-;;; 
-;;; See: "A20 Line":
-;;;    http://wiki.osdev.org/A20_Line
-;;; And: "A20 - a pain from the past":
-;;;    http://www.win.tue.nl/~aeb/linux/kbd/A20.html
-;;; 
-;;; Mine is a modern system, and I don't really care about the past.
-;;; Just get the BIOS to do it for us.
-
-enable_a20:
-
-	mov     ax,0x2401
-        int     0x15
-        jnc     .no_error
-        mov     si,a20_fail_msg
-        call    message
-.no_error:
-        ret
-
 ;;; Display NULL terminated string at ds:si
         
 message:
