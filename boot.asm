@@ -3,8 +3,8 @@
 
 ; Tell the compiler that this is offset 0.
 ; It isn't offset 0, but it will be after the jump.
-[ORG 0]
 
+        org 0
         jmp 07C0h:start     ; Goto segment 07C0
 
 start:
@@ -31,7 +31,6 @@ start:
 ;;; Branch to it
 
         jmp     1000h
-
 
 bootdrv:        db      0
         

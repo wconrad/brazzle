@@ -1,7 +1,10 @@
 ; pgm.asm
 
-        [ORG 1000h]
 
+;;; The boot sector will load us at CS:1000
+;;; CS, DS and ES will be the same.
+        
+        org 1000h
 
 ;;; Write a string
 
