@@ -1,5 +1,5 @@
 ; 1.ASM
-; Print "====" on the screen and hang
+; Load a sector and run it
 
 ; Tell the compiler that this is offset 0.
 ; It isn't offset 0, but it will be after the jump.
@@ -13,25 +13,28 @@ start:
         mov ds, ax
         mov es, ax
 
-;;; Write a string
+;;; Read sector from the drive
 
-        mov si, string
+        mov     ah,2            ; read sectors from drive
+        mov     al,1            ; sector count
+        mov     ch,0            ; track
+        mov     cl,2            ; sector
+        mov     dh,0            ; head
+        mov     dl,0            ; drive
+        mov     bx,1000h
+        int     13h
 
-again:
-        lodsb
-        or  al,al
-        jz  hang
+;;; Display the first byte of the sector we just loaded
 
-        mov ah,0eh
-        xor bh,bh
-        int 10h
-        
-        jmp again
+        mov     ah, 9           ; print
+        mov     al, [1000h]
+        mov     bx,7
+        mov     cx,4
+        int     10h
 
-string: db 'Hello Cyberspace!',13,10,0
+;;; Branch to it
 
-hang:                       ; Hang!
-        jmp hang
+        jmp     1000h
 
 times 510-($-$$) db 0
 dw 0AA55h
