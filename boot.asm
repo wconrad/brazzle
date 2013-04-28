@@ -13,6 +13,10 @@ start:
         mov ds, ax
         mov es, ax
 
+;;; Save the boot drive
+
+        mov     [bootdrv],dl
+
 ;;; Read sector from the drive
 
         mov     ah,2            ; read sectors from drive
@@ -20,7 +24,7 @@ start:
         mov     ch,0            ; track
         mov     cl,2            ; sector
         mov     dh,0            ; head
-        mov     dl,80h          ; drive
+        mov     dl,[bootdrv]    ; drive
         mov     bx,1000h
         int     13h
 
@@ -28,5 +32,8 @@ start:
 
         jmp     1000h
 
+
+bootdrv:        db      0
+        
 times 510-($-$$) db 0
 dw 0AA55h
