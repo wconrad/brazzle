@@ -7,16 +7,17 @@
 ;;; Tell the compiler that this is offset 0.
 ;;; It isn't offset 0, but it will be after the jump.
 
-        org 0
-        jmp 07C0h:start     ; Goto segment 07C0
+        bits    16
+        org     0x7c00
 
+        jmp     0:start         ;cs = 0
 start:
 
 ;;; DS = ES = CS
 
-        mov ax,cs
-        mov ds,ax
-        mov es,ax
+        mov     ax,cs
+        mov     ds,ax
+        mov     es,ax
 
 ;;; Save the boot drive
 
@@ -35,7 +36,7 @@ start:
         mov     si,bootmsg
         call    message
 
-;;; Read sector from the drive
+;;; Read second stage loader from the drive.
 
         mov     ah,2            ; read sectors from drive
         mov     al,10           ; sector count
@@ -46,9 +47,12 @@ start:
         mov     bx,0x1000
         int     0x13
 
+        mov     si,loaded_msg
+        call    message
+
 ;;; Branch to it
 
-        jmp     0x1000
+        jmp     0:0x1000
 
 ;;; Display NULL terminated string at ds:si
         
@@ -66,22 +70,7 @@ done:
 
 bootdrv:        db      0
 bootmsg:        db      'Loading',13,10,0
-a20_fail_msg:   db      'Failed to enable A20',13,10,0
-pmode_msg:      db      'Entering protected mode',13,10,0
-foo_msg:        db      'foo',13,10,0
+loaded_msg:     db      'Loaded',13,10,0
 
-;;; Here's the locations of my IDT and GDT.  Remember, Intel's are
-;;; little endian processors, therefore, these are in reversed order.
-;;; Also note that lidt and lgdt accept a 32-bit address and 16-bit
-;;; limit, therefore, these are 48-bit variables.
-        
-pIDT:
-        dw 7FFh ; limit of 256 IDT slots
-        dd 0000h ; starting at 0000
-        
-pGDT:
-        dw 17FFh ; limit of 768 GDT slots
-        dd 0800h ; starting at 0800h (after IDT)
-        
-times 510-($-$$) db 0
+        times 510-($-$$) db 0
 dw 0AA55h

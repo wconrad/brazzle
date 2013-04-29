@@ -15,4 +15,4 @@ hd.img: boot.bin pgm.bin
 	dd conv=notrunc bs=512 if=pgm.bin of=$@ seek=1
 
 %.bin: %.asm
-	nasm $< -o $@ -l $*.lst
+	nasm -f bin -o $@ -l $*.lst $< 
