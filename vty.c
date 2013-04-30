@@ -2,9 +2,11 @@
 #include "vty.h"
 
 // The cursor row (0...VID_ROWS)
+
 static int row;
 
 // The cursor column (0...VID_COLS)
+
 static int col;
 
 // The video attribute (foreground color, background color, blink,
