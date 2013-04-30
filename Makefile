@@ -16,6 +16,7 @@ hd.img: boot.bin pgm.bin
 
 OBJ_FILES = \
   main.o \
+  vty.o \
   vid.o
 
 pgm.bin: pgm.o ${OBJ_FILES}
