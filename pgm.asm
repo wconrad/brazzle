@@ -2,11 +2,15 @@
 
 	bits    16
 
+        section .text
+        global  start
+        extern  main
+start: 
+
 ;;; The boot sector will load us at CS:1000
 ;;; CS, DS and ES will be the same.
         
-        org     0x1000
-        jmp     0:start
+        jmp     0:start2
         
 ;;; Poke a char to the screen.  Simple debugging when nothing else
 ;;; works.
@@ -71,8 +75,8 @@ init_msg:       db      'Initializing',13,10,0
 protmode_msg:   db       'Entering protected mode.',13,10,0
 a20_msg:        db      'Enabling A20',13,10,0
 a20_fail_msg:   db      'Failed to set A20',13,10,0
-	
-start:
+
+start2:
 
 ;;; Display message
 
@@ -94,9 +98,12 @@ start:
 
         lgdt    [gdt_descriptor]
 
-;;; Enter protected mode
+;;; Leave interrupts disabled.  We're not prepared to handle them yet.
 
         cli
+
+;;; Enter protected mode
+
         mov     eax,cr0
         or      al,1
         mov     cr0,eax
@@ -108,20 +115,24 @@ stage3:
 
 ;;; Set data segments to data selector
 
-	cli
         mov     ax,0x10
         mov     ds,ax
         mov     ss,ax
         mov     es,ax
         mov     esp,0x9000
-        sti
         
 ;;; Modify video memory
 
         mov     [0xb8000],dword 'P M '
 
-;;; Halt
+;;; Jump to main()
 
+        call     main
+
+;;; Main should not return.  If it does, poke something into video
+;;; memory and halt.
+
+        mov     [0xb8000],dword '( ) '
 	cli
         hlt
 
