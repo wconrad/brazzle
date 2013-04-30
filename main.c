@@ -2,7 +2,7 @@
 
 int main() {
   vid_init();
-  for (unsigned char c = ' '; c <= '~'; c++)
-    vid_putc(c);
+  vid_clear();
+  vid_puts("Hello, world\n");
   for(;;) {}
 }
