@@ -1,8 +1,15 @@
 #include "vid.h"
 #include "vty.h"
 
+// The cursor row (0...VID_ROWS)
 static int row;
+
+// The cursor column (0...VID_COLS)
 static int col;
+
+// The video attribute (foreground color, background color, blink,
+// etc.)
+
 static char attr;
 
 // Move the cursor to the beginning of the line.
@@ -29,7 +36,7 @@ static void cursor_right() {
     nl();
 }
 
-// Initialize.
+// Initialize.  Must be called before other function in this module.
 
 void vty_init() {
   vid_clear();
@@ -38,7 +45,10 @@ void vty_init() {
   attr = VID_DEFAULT_ATTR;
 }
 
-// Write a character to the video, teletype style.
+// Write a character at the cursor location and advance the cursor.
+// Special characters:
+//   '\r': Move to beginning of this line
+//   '\n': Move to beginning of next line
 
 void vty_putc(char c) {
   switch(c) {
@@ -54,7 +64,7 @@ void vty_putc(char c) {
   }
 }
 
-// Write a string to the video, teletype style.
+// Write a string.  Special characters are interpreted (see vty_putc).
 
 void vty_puts(char * s) {
   char c;
