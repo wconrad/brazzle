@@ -1,4 +1,5 @@
 #include "vid.h"
+#include "string.h"
 
 // Low level video functions which interface directly with hardware.
 
@@ -18,6 +19,21 @@ void vid_poke(int row, int col, char c, char attr) {
 
 void vid_clear() {
   for (int row = 0; row < VID_ROWS; row++)
-    for (int col = 0; col < VID_COLS; col++)
-      vid_poke(row, col, ' ', VID_DEFAULT_ATTR);
+    vid_clear_row(row);
+}
+
+// Clear a row.  Sets every character of the row to a space with the
+// default attribute.
+
+void vid_clear_row(int row) {
+  for (int col = 0; col < VID_COLS; col++)
+    vid_poke(row, col, ' ', VID_DEFAULT_ATTR);
+}
+
+// Scroll the screen up one line
+
+void vid_scroll() {
+  memmove(&((*video)[0][0][0]),
+          &((*video)[1][0][0]),
+          sizeof(*video) - 2 * VID_COLS);
 }

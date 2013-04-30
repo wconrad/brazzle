@@ -21,16 +21,21 @@ static void cr() {
 }
 
 // Move the cursor to the beginning of the next line.  If it goes off the bottom of the screen,
-// move it to the top of the screen.
+// scroll the screen.
 
 static void nl() {
   cr();
-  row = (row + 1) % VID_ROWS;
+  if(row == VID_ROWS - 1) {
+    vid_scroll();
+    vid_clear_row(VID_ROWS - 1);
+  }
+  else
+    row += 1;
 }
 
 // Move the cursor to the right.  If it goes off the right end of the
 // line, move it to the beginning of the next line.  If it goes off
-// bottom the screen, move it to the top of the screen.
+// bottom the screen, scroll the screen.
 
 static void cursor_right() {
   col += 1;

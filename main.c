@@ -1,8 +1,8 @@
-#include "vid.h"
+#include "string.h"
 #include "vty.h"
 
 int main() {
   vty_init();
-  vty_puts("Hello, world\n");
+  vty_puts("Hello, world...\n");
   for(;;) {}
 }
