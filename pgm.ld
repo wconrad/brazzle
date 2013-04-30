@@ -1,22 +1,19 @@
 OUTPUT_FORMAT("binary")
 ENTRY(start)
-phys = 0x001000;
 SECTIONS
 {
-  .text phys : AT(phys) {
-    code = .;
+  . = 0x1000;
+  .text : {
     *(.text)
-    *(.rodata)
   }
-  .data : AT(phys + (data - code))
-  {
-    data = .;
+  .data : {
     *(.data)
   }
-  .bss : AT(phys + (bss - code))
-  {
-    bss = .;
+  .bss : {
     *(.bss)
   }
-  end = .;
+  /DISCARD/ : {
+    *(.comment)
+    *(.eh_frame)
+  }
 }
