@@ -16,13 +16,14 @@ hd.img: boot.bin pgm.bin
 
 OBJ_FILES = \
   main.o \
+  string.o \
   vty.o \
   vid.o
 
 pgm.bin: pgm.o ${OBJ_FILES}
 	ld --script=pgm.ld --print-map -o pgm.bin $^ >pgm.map
 
-pgm.o: pgm.asm
+%.o: %.asm
 	nasm -f aout -o $@ -l $*.lst $<
 
 boot.bin: boot.asm
@@ -35,7 +36,6 @@ GCC_OPTS = \
 	-Wall \
 	-Wextra \
 	-fno-builtin \
-        -fomit-frame-pointer \
 	-nostdinc \
 	-std=c99
 
