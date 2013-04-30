@@ -14,7 +14,11 @@ hd.img: boot.bin pgm.bin
 	dd conv=notrunc bs=512 if=boot.bin of=$@
 	dd conv=notrunc bs=512 if=pgm.bin of=$@ seek=1
 
-pgm.bin: pgm.o main.o
+OBJ_FILES = \
+  main.o \
+  vid.o
+
+pgm.bin: pgm.o ${OBJ_FILES}
 	ld --script=pgm.ld --print-map -o pgm.bin $^ >pgm.map
 
 pgm.o: pgm.asm
@@ -24,10 +28,9 @@ boot.bin: boot.asm
 	nasm -f bin -o $@ -l $*.lst $<
 
 GCC_OPTS = \
-	-O2 \
+	-Os \
 	-Tno-strict-aliasing \
 	-pedantic-errors \
-	-Werror \
 	-Wall \
 	-Wextra \
 	-fno-builtin \
