@@ -1,6 +1,8 @@
 #include "vid.h"
 #include "vty.h"
 
+#include "sprintf.h"
+
 // The cursor row (0...VID_ROWS)
 
 static int row;
@@ -77,4 +79,16 @@ void vty_puts(char * s) {
   char c;
   while((c = *s++) != '\0')
     vty_putc(c);  
+}
+
+// Write formatted.  Special characters are interpreted (see vty_putc).
+// See vaprintf for formatting.
+
+void vty_printf(const char * format, ...) {
+  va_list varargs;
+  va_start(varargs, format);
+  char buffer[256];
+  vsprintf(buffer, sizeof(buffer), format, varargs);
+  vty_puts(buffer);
+  va_end(varargs);
 }

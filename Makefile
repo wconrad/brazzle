@@ -15,10 +15,12 @@ hd.img: boot.bin pgm.bin
 	dd conv=notrunc bs=512 if=pgm.bin of=$@ seek=1
 
 OBJ_FILES = \
-  main.o \
-  string.o \
-  vty.o \
-  vid.o
+	main.o \
+	conv.o \
+	sprintf.o \
+	string.o \
+	vid.o \
+	vty.o
 
 pgm.bin: pgm.o ${OBJ_FILES}
 	ld --script=pgm.ld --print-map -o pgm.bin $^ >pgm.map
@@ -35,8 +37,7 @@ GCC_OPTS = \
 	-pedantic-errors \
 	-Wall \
 	-Wextra \
-	-fno-builtin \
-	-nostdinc \
+	--freestanding \
 	-std=c99
 
 %.o: %.c
