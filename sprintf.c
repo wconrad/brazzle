@@ -37,6 +37,17 @@ vprintf_decimal(vprintf_sink * sink,
     sink(o, *p++);
 }
 
+// Format a string.
+
+static void
+vprintf_string(vprintf_sink * sink,
+               void * o,
+               va_list varargs) {
+  char * s = va_arg(varargs, char *);
+  while(*s != '\0')
+    sink(o, *s++);
+}
+
 // Format a directive.  Returns the new formatp.
 
 static const char * 
@@ -56,6 +67,9 @@ vprintf_directive(vprintf_sink * sink,
   case 'd':
     vprintf_decimal(sink, o, varargs);
     break;
+  case 's':
+    vprintf_string(sink, o, varargs);
+    break;
   default:
     sink(o, '%');
     sink(o, c);
@@ -65,8 +79,9 @@ vprintf_directive(vprintf_sink * sink,
 
 // Format taking a sink and va_list.
 // Format specifiers:
-//   %%    - Print a percent sign
-//   %d    - Format decimal
+//   %% - Print a percent sign
+//   %d - Format decimal
+//   %s - Format string
 
 void vprintf(vprintf_sink * sink,
              void * o,

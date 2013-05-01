@@ -38,6 +38,7 @@ int main() {
   itoa(buffer, 0x7fffffff);
   vty_printf(buffer);
   vty_printf("\n");
+  vty_printf("[%s]\n", buffer);
 
   for(;;) {}
 }
