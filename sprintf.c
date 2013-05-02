@@ -29,8 +29,8 @@ static void buffwrite(buffer_cursor_t * cursor, char c) {
 static void
 vprintf_signed(vprintf_sink * sink,
                 void * o,
-                va_list varargs) {
-  int n = va_arg(varargs, int);
+                va_list *varargs) {
+  int n = va_arg(*varargs, int);
   char buffer[ITODEC_BUFF_LEN];
   char * p = itodec(buffer, n);
   while(*p != '\0')
@@ -42,8 +42,8 @@ vprintf_signed(vprintf_sink * sink,
 static void
 vprintf_unsigned(vprintf_sink * sink,
                 void * o,
-                va_list varargs) {
-  int n = va_arg(varargs, int);
+                va_list *varargs) {
+  int n = va_arg(*varargs, int);
   char buffer[UTODEC_BUFF_LEN];
   char * p = utodec(buffer, n);
   while(*p != '\0')
@@ -55,8 +55,8 @@ vprintf_unsigned(vprintf_sink * sink,
 static void
 vprintf_string(vprintf_sink * sink,
                void * o,
-               va_list varargs) {
-  char * s = va_arg(varargs, char *);
+               va_list *varargs) {
+  char * s = va_arg(*varargs, char *);
   while(*s != '\0')
     sink(o, *s++);
 }
@@ -67,7 +67,7 @@ static const char *
 vprintf_directive(vprintf_sink * sink,
                   void * o,
                   const char * formatp,
-                  va_list varargs) {
+                  va_list *varargs) {
   char c = *formatp++;
   switch(c) {
   case '\0':
@@ -107,7 +107,7 @@ void vprintf(vprintf_sink * sink,
   for(;;) {
     char c = *formatp++;
     if(c == '%')
-      formatp = vprintf_directive(sink, o, formatp, varargs);
+      formatp = vprintf_directive(sink, o, formatp, &varargs);
     else {
       sink(o, c);
       if(c == '\0')
