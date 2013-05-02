@@ -58,3 +58,22 @@ itodec(char * buffer, int n) {
   utodec(p, u);
   return buffer;
 }
+
+// Convert a string to an unsigned integer.
+// On input, buffer points to a zero terminated string.
+// On output, *endptr points to the first invalid character.
+// Returns the integer.
+
+unsigned dectou(const char *buffer, const char **endptr) {
+  const char * p = buffer;
+  unsigned n = 0;
+  for(;;) {
+    char c = *p;
+    if(c < '0' || c > '9')
+      break;
+    p++;
+    n = 10 * n + (c - '0');
+  }
+  *endptr = p;
+  return n;
+}
