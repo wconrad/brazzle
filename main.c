@@ -3,34 +3,13 @@
 #include "string.h"
 #include "vty.h"
 
-static void print_d(int n) {
-  char buffer[ITODEC_BUFF_LEN_DEC];
-  vty_printf("[%s]\n", itodec(buffer, n));
-}
-
-static void print_u(unsigned n) {
-  char buffer[ITODEC_BUFF_LEN_DEC];
-  vty_printf("[%s]\n", utodec(buffer, n));
-}
-
-static void print_h(unsigned n) {
-  char buffer[UTODEC_BUFF_LEN_HEX];
-  vty_printf("[%s]\n", utohex(buffer, n));
-}
-
-static void print_n(int n) {
-  print_d(n);
-  print_u(n);
-  print_h(n);
-}
-
 int main() {
   vty_init();
   vty_puts("Hello, world...\n");
-  print_n(0x80000000);
-  print_n(-123);
-  print_n(0x00000000);
-  print_n(+123);
-  print_n(0x7fffffff);
+  vty_printf("[%u]", 0);
+  vty_printf("[%u]", 1234);
+  vty_printf("[%u]", 0x7fffffff);
+  vty_printf("[%u]", 0x80000000);
+  vty_printf("[%u]", 0xffffffff);
   for(;;) {}
 }

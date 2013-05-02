@@ -24,15 +24,28 @@ static void buffwrite(buffer_cursor_t * cursor, char c) {
   cursor->remaining--;
 }
 
-// Format a signed decimal number.
+// Format a signed integer.
 
 static void
-vprintf_decimal(vprintf_sink * sink,
+vprintf_signed(vprintf_sink * sink,
                 void * o,
                 va_list varargs) {
   int n = va_arg(varargs, int);
-  char buffer[ITODEC_BUFF_LEN_DEC];
+  char buffer[ITODEC_BUFF_LEN];
   char * p = itodec(buffer, n);
+  while(*p != '\0')
+    sink(o, *p++);
+}
+
+// Format an unsigned integer;
+
+static void
+vprintf_unsigned(vprintf_sink * sink,
+                void * o,
+                va_list varargs) {
+  int n = va_arg(varargs, int);
+  char buffer[UTODEC_BUFF_LEN];
+  char * p = utodec(buffer, n);
   while(*p != '\0')
     sink(o, *p++);
 }
@@ -65,10 +78,13 @@ vprintf_directive(vprintf_sink * sink,
     sink(o, c);
     break;
   case 'd':
-    vprintf_decimal(sink, o, varargs);
+    vprintf_signed(sink, o, varargs);
     break;
   case 's':
     vprintf_string(sink, o, varargs);
+    break;
+  case 'u':
+    vprintf_unsigned(sink, o, varargs);
     break;
   default:
     sink(o, '%');

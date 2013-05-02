@@ -1,9 +1,9 @@
 #ifndef CONV_H
 #define CONV_H
 
-#define UTODEC_BUFF_LEN_HEX 8
-#define UTODEC_BUFF_LEN_DEC 11
-#define ITODEC_BUFF_LEN_DEC 12
+#define UTODEC_BUFF_LEN 11
+#define UTOHEX_BUFF_LEN 9
+#define ITODEC_BUFF_LEN 12
 
 char * utodec(char * buffer, unsigned n);
 char * utohex(char * buffer, unsigned n);
