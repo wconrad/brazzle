@@ -1,3 +1,8 @@
+.phony: default
+default: build
+
+-include *.d
+
 .phony: build
 build: hd.img
 
@@ -38,7 +43,8 @@ GCC_OPTS = \
 	-Wall \
 	-Wextra \
 	--freestanding \
-	-std=c99
+	-std=c99 \
+        -MMD
 
 %.o: %.c
 	gcc -c ${GCC_OPTS} -o $@ $<
