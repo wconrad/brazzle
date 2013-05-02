@@ -4,16 +4,18 @@
 #include "vty.h"
 
 static void print_d(int n) {
-  char buffer[ITOA_BUFF_LEN];
-  vty_printf("[%s]\n", itoa(buffer, n));
+  char buffer[ITODEC_BUFF_LEN_DEC];
+  vty_printf("[%s]\n", itodec(buffer, n));
 }
 
 static void print_u(unsigned n) {
-  char buffer[ITOA_BUFF_LEN];
-  vty_printf("[%s]\n", utoa(buffer, n));
+  char buffer[ITODEC_BUFF_LEN_DEC];
+  vty_printf("[%s]\n", utodec(buffer, n));
 }
 
 static void print_h(unsigned n) {
+  char buffer[UTODEC_BUFF_LEN_HEX];
+  vty_printf("[%s]\n", utohex(buffer, n));
 }
 
 static void print_n(int n) {

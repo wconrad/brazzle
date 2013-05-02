@@ -31,8 +31,8 @@ vprintf_decimal(vprintf_sink * sink,
                 void * o,
                 va_list varargs) {
   int n = va_arg(varargs, int);
-  char buffer[ITOA_BUFF_LEN];
-  char * p = itoa(buffer, n);
+  char buffer[ITODEC_BUFF_LEN_DEC];
+  char * p = itodec(buffer, n);
   while(*p != '\0')
     sink(o, *p++);
 }

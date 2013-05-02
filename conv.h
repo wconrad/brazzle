@@ -1,10 +1,12 @@
 #ifndef CONV_H
 #define CONV_H
 
-#define UTOA_BUFF_LEN 11
-#define ITOA_BUFF_LEN 12
+#define UTODEC_BUFF_LEN_HEX 8
+#define UTODEC_BUFF_LEN_DEC 11
+#define ITODEC_BUFF_LEN_DEC 12
 
-char * utoa(char * buffer, unsigned n);
-char * itoa(char * buffer, int n);
+char * utodec(char * buffer, unsigned n);
+char * utohex(char * buffer, unsigned n);
+char * itodec(char * buffer, int n);
 
 #endif

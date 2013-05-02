@@ -3,30 +3,49 @@
 #include "conv.h"
 #include "string.h"
 
-// Convert an unsigned decimal number to a string.
-// buffer must be at least UTOA_BUFF_LEN long.
+// Convert an unsigned number to a string.
+// buffer must be at least UTODEC_BUFF_LEN_HEX long.
+// radix may be between 2 and 16.
 // Returns the pointer to the buffer.
 
-char *
-utoa(char * buffer, unsigned n) {
+static char *
+utoa(char * buffer, unsigned n, int radix) {
   char * p = buffer;
   if(n == 0)
     *p++ = '0';
   else
     while(n != 0) {
-      *p++ = n % 10 + '0';
-      n /= 10;
+      *p++ = "0123456789abcdef"[n % radix];
+      n /= radix;
     }
   *p = '\0';
   return strrev(buffer);
 }
 
-// Convert a signed decimal number to a string.
-// buffer must be at least ITOA_BUFF_LEN long.
+// Convert an unsigned number to a decimal string.
+// buffer must be at least UTODEC_BUFF_LEN_HEX long.
 // Returns the pointer to the buffer.
 
 char *
-itoa(char * buffer, int n) {
+utodec(char * buffer, unsigned n) {
+  return utoa(buffer, n, 10);
+}
+
+// Convert an unsigned number to a hex string.
+// buffer must be at least UTODEC_BUFF_LEN_HEX long.
+// Returns the pointer to the buffer.
+
+char *
+utohex(char * buffer, unsigned n) {
+  return utoa(buffer, n, 16);
+}
+
+// Convert a signed number to a decimal string.
+// buffer must be at least ITODEC_BUFF_LEN_DEC long.
+// Returns the pointer to the buffer.
+
+char *
+itodec(char * buffer, int n) {
   char * p = buffer;
   bool neg = (n < 0);
   unsigned u;
@@ -36,6 +55,6 @@ itoa(char * buffer, int n) {
   }
   else
     u = n;
-  utoa(p, u);
+  utodec(p, u);
   return buffer;
 }
