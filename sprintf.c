@@ -25,7 +25,7 @@ static void buffwrite(buffer_cursor_t * cursor, char c) {
   cursor->remaining--;
 }
 
-// Format a signed integer.
+// Format a signed integer
 
 static char *
 vprintf_signed(char * buffer, va_list *varargs) {
@@ -34,12 +34,21 @@ vprintf_signed(char * buffer, va_list *varargs) {
   return buffer;
 }
 
-// Format an unsigned integer;
+// Format an unsigned integer
 
 static char *
 vprintf_unsigned(char * buffer, va_list *varargs) {
   int n = va_arg(*varargs, int);
   utodec(buffer, n);
+  return buffer;
+}
+
+// Format an unsigned integer as hexadecimal
+
+static char *
+vprintf_hex(char * buffer, va_list *varargs) {
+  int n = va_arg(*varargs, int);
+  utohex(buffer, n);
   return buffer;
 }
 
@@ -115,6 +124,9 @@ vprintf_directive(vprintf_sink * sink,
       case 'u':
         converted = vprintf_unsigned(buffer, varargs);
         break;
+      case 'x':
+        converted = vprintf_hex(buffer, varargs);
+        break;
       default:
         buffer[0] = '%';
         buffer[1] = c;
@@ -143,6 +155,7 @@ vprintf_directive(vprintf_sink * sink,
 // * d - Signed integer
 // * s - String
 // * u - Unsigned integer
+// * x - Unsigned integer, hexadecimal
 // To print a % sign, use %%
 
 void vprintf(vprintf_sink * sink,
