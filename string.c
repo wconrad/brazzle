@@ -54,3 +54,13 @@ strrev(char * s) {
   }
   return s;
 }
+
+// Return the length of a string.  Do not include the terminating NULL
+// in the length.
+
+unsigned strlen(const char * s) {
+  unsigned length = 0;
+  while (*s++ != '\0')
+    length++;
+  return length;
+}
