@@ -6,8 +6,10 @@
 int main() {
   vty_init();
   vty_puts("Hello, world...\n");
-  vty_printf("[%x]", 0x1234);
-  vty_printf("[%8x]", 0x1234);
-  vty_printf("[%08x]", 0x1234);
+  vty_printf("[%p]\n", &main);
+  vty_printf("[%p]\n", (void *) 0);
+  vty_printf("[%p]\n", (void *) 0xffffffff);
+  vty_printf("[%12p]\n", (void *) 0xffffffff);
+  vty_printf("[%-12p]\n", (void *) 0xffffffff);
   for(;;) {}
 }

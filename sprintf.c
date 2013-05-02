@@ -52,6 +52,15 @@ vprintf_hex(char * buffer, va_list *varargs) {
   return buffer;
 }
 
+// Format a pointer
+
+static char *
+vprintf_pointer(char * buffer, int buflen, va_list *varargs) {
+  int n = va_arg(*varargs, int);
+  sprintf(buffer, buflen, "0x%08x", n);
+  return buffer;
+}
+
 // Format a string.
 
 static char *
@@ -127,6 +136,9 @@ vprintf_directive(vprintf_sink * sink,
       case 'x':
         converted = vprintf_hex(buffer, varargs);
         break;
+      case 'p':
+        converted = vprintf_pointer(buffer, sizeof(buffer), varargs);
+        break;
       default:
         buffer[0] = '%';
         buffer[1] = c;
@@ -156,6 +168,7 @@ vprintf_directive(vprintf_sink * sink,
 // * s - String
 // * u - Unsigned integer
 // * x - Unsigned integer, hexadecimal
+// * p - Pointer
 // To print a % sign, use %%
 
 void vprintf(vprintf_sink * sink,
