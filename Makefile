@@ -12,7 +12,7 @@ run: build
 
 .phony: clean
 clean:
-	rm -f *.bin *.lst *.img *.o
+	rm -f *.bin *.lst *.img *.o *.map
 
 hd.img: boot.bin pgm.bin
 	qemu-img create -f raw $@ 10M
