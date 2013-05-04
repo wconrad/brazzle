@@ -11,4 +11,8 @@ void int_init();
 
 extern void int3();
 
+// Cause a GP (General Protection) fault
+
+extern void gp_fault();
+
 #endif
