@@ -20,8 +20,13 @@ hd.img: boot.bin pgm.bin
 	dd conv=notrunc bs=512 if=pgm.bin of=$@ seek=1
 
 OBJ_FILES = \
-	main.o \
 	conv.o \
+	cpuasm.o \
+	idt.o \
+	idtasm.o \
+	int.o \
+	intasm.o \
+	main.o \
 	sprintf.o \
 	string.o \
 	vid.o \

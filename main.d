@@ -1,1 +1,1 @@
-main.o: main.c conv.h sprintf.h string.h vty.h
+main.o: main.c cpu.h int.h vty.h
