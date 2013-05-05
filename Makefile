@@ -28,6 +28,7 @@ OBJ_FILES = \
 	int.o \
 	intasm.o \
 	main.o \
+	memmap.o \
 	sprintf.o \
 	string.o \
 	vid.o \

@@ -6,8 +6,9 @@
 ;;;  once in protected mode.
         
 memmap_entry_size:      equ     24
-memmap:                 equ     0x0500
-memmap_entries:         equ     16
+memmap_max_entries:     equ     16
+memmap_entries:         equ     0x0500
+memmap:                 equ     0x0504
 
 ;;; stage2 loader and its stack
         

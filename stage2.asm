@@ -73,17 +73,30 @@ enable_a20:
 
 ;;; Get the memory map using the BIOS.
 ;;; Stores it at memmap
-;;; See: http://wiki.osdev.org/Detecting_Memory_%28x86%29#BIOS_Function:_INT_0x15.2C_EAX_.3D_0xE820
+;;; See:
+;;;   * http://wiki.osdev.org/Detecting_Memory_%28x86%29#BIOS_Function:_INT_0x15.2C_EAX_.3D_0xE820
 
-get_memmap:
-
-        mov     edi,memmap
-        xor     ebx,ebx
-        
-        mov     edx,0x534d4150           ; magic
-        mov     eax,0xe820               ; command
-        mov     ecx,24
+get_memmap:                             
+.magic: equ     'PAMS'                          ; 'MAPS'
+        mov     edi,memmap                      ; dest addr
+        xor     ebx,ebx                         ; continuation value
+        mov     dword [memmap_entries],0
+.again:
+        mov     edx,.magic
+        mov     eax,0xe820
+        mov     ecx,memmap_entry_size
         int     15h
+        jc      .done
+        cmp     eax,.magic
+        jne     .done
+        test    ebx,ebx
+        jz      .done
+        inc     dword [memmap_entries]
+        add     di,memmap_entry_size
+        cmp     dword [memmap_entries],memmap_max_entries
+        jge     .done
+        jmp     .again
+.done:
         ret
 
 ;;; Strings
@@ -176,8 +189,11 @@ datasel:        equ     0x0010
         global  codesel_var
 codesel_var:    dw      codesel
 
-        global  memmap_var
-memmap_var:     dd      memmap        
+        global  memmap_entries_ptr
+memmap_entries_ptr:     dd      memmap_entries
+
+        global  memmap_ptr
+memmap_ptr:     dd      memmap
 
 ;;; The gtd descriptor points to, and gives the size of, the gdt.
 
