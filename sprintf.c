@@ -52,6 +52,15 @@ vprintf_hex(char * buffer, va_list *varargs) {
   return buffer;
 }
 
+// Format an unsigned integer as binary
+
+static char *
+vprintf_bin(char * buffer, va_list *varargs) {
+  int n = va_arg(*varargs, int);
+  utobin(buffer, n);
+  return buffer;
+}
+
 // Format a pointer
 
 static char *
@@ -124,6 +133,9 @@ vprintf_directive(vprintf_sink * sink,
       unsigned min_width = dectou(formatp, &formatp);
       c = *formatp++;
       switch(c) {
+      case 'b':
+        converted = vprintf_bin(buffer, varargs);
+        break;
       case 'd':
         converted = vprintf_signed(buffer, varargs);
         break;

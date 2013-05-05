@@ -4,7 +4,6 @@
 #include "string.h"
 
 // Convert an unsigned number to a string.
-// buffer must be at least UTODEC_BUFF_LEN_HEX long.
 // radix may be between 2 and 16.
 // Returns the pointer to the buffer.
 
@@ -22,27 +21,19 @@ utoa(char * buffer, unsigned n, int radix) {
   return strrev(buffer);
 }
 
-// Convert an unsigned number to a decimal string.
-// buffer must be at least UTODEC_BUFF_LEN_HEX long.
-// Returns the pointer to the buffer.
-
 char *
 utodec(char * buffer, unsigned n) {
   return utoa(buffer, n, 10);
 }
 
-// Convert an unsigned number to a hex string.
-// buffer must be at least UTODEC_BUFF_LEN_HEX long.
-// Returns the pointer to the buffer.
-
 char *
 utohex(char * buffer, unsigned n) {
   return utoa(buffer, n, 16);
 }
-
-// Convert a signed number to a decimal string.
-// buffer must be at least ITODEC_BUFF_LEN_DEC long.
-// Returns the pointer to the buffer.
+char *
+utobin(char * buffer, unsigned n) {
+  return utoa(buffer, n, 2);
+}
 
 char *
 itodec(char * buffer, int n) {
@@ -58,12 +49,6 @@ itodec(char * buffer, int n) {
   utodec(p, u);
   return buffer;
 }
-
-// Convert a string to an unsigned integer.
-// On input, buffer points to a zero terminated string.
-// On output, *endptr points to the first invalid character.
-// buffer and *endptr may be equal, if desired.
-// Returns the integer.
 
 unsigned dectou(const char *buffer, const char **endptr) {
   const char * p = buffer;
