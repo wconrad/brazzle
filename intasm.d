@@ -1,0 +1,2 @@
+intasm.o: intasm.asm
+

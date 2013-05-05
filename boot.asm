@@ -3,10 +3,9 @@
 ;;; * Load program starting at sector 1
 ;;; * Run it
 
-        bits    16
+        %include 'mem.inc'
 
-stage2: equ     0x1000          ; Address of second stage loader
-stack:  equ     stage2          ; Stack grows down from here
+        bits    16
 
 ;;; The BIOS loads us at 0x00007c00, but with the segment register
 ;;; nknown (it could be 0000:7c00, or 007c:0000, etc.)  Force
@@ -29,7 +28,7 @@ start:
 ;;; Set up a stack
 
         cli
-        mov     ax,stack
+        mov     ax,stage2_tos
         mov     ss,ax
         mov     sp,0
         sti
@@ -51,7 +50,7 @@ start:
 
 ;;; Branch to it
 
-        jmp     0:stage2
+        jmp     0:stage2_addr
 
 ;;; Display NULL terminated string at ds:si
         
@@ -83,7 +82,7 @@ dap:
         db      dap_size        ; size of packet
         db      0               ; always 0
         dw      10              ; number of sectors to transfer
-        dw      stage2          ; buffer offset
+        dw      stage2_addr     ; buffer offset
         dw      0               ; buffer segment
         dd      1               ; LBA (lower)
         dd      0               ; LBA (upper)

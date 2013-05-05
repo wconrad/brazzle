@@ -1,0 +1,2 @@
+idtasm.o: idtasm.asm
+

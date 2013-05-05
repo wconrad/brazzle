@@ -1,6 +1,7 @@
 .phony: default
 default: build
 
+.SUFFIXES: .bin
 -include *.d
 
 .phony: build
@@ -35,11 +36,13 @@ OBJ_FILES = \
 stage2.bin: stage2.o ${OBJ_FILES}
 	ld --script=stage2.ld --print-map -o stage2.bin $^ >stage2.map
 
+NASM_OPTS = -o $@ -l $*.lst -MD $*.d
+
 %.o: %.asm
-	nasm -f aout -o $@ -l $*.lst $<
+	nasm -f aout ${NASM_OPTS} $<
 
 boot.bin: boot.asm
-	nasm -f bin -o $@ -l $*.lst $<
+	nasm -f bin ${NASM_OPTS} $<
 
 GCC_OPTS = \
 	-Os \

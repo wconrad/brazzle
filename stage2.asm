@@ -1,21 +1,19 @@
 ; pgm.asm
 
+        %include 'mem.inc'
+
 	bits    16
-
-;;; Constants
-
-tos:    equ     0x1000          ;Top of stack -- just below stage2 loader
 
         section .text
         global  start
         extern  main
 start: 
 
-        ;; The boot sector will load us at CS:1000
-        ;; CS, DS and ES will be the same.
+        ;; The boot sector will load us at 0:stage2_addr
+        ;; CS, DS and ES will all be 0
         
         jmp     0:start2
-        
+
 ;;; Poke a char to the screen.  Simple debugging when nothing else
 ;;; works.
 ;;; 
@@ -73,11 +71,27 @@ enable_a20:
 .no_error:
         ret
 
+;;; Get the memory map using the BIOS.
+;;; Stores it at memmap
+;;; See: http://wiki.osdev.org/Detecting_Memory_%28x86%29#BIOS_Function:_INT_0x15.2C_EAX_.3D_0xE820
+
+get_memmap:
+
+        mov     edi,memmap
+        xor     ebx,ebx
+        
+        mov     edx,0x534d4150           ; magic
+        mov     eax,0xe820               ; command
+        mov     ecx,24
+        int     15h
+        ret
+
 ;;; Strings
 	
-init_msg:       db      'Initializing',13,10,0
+init_msg:       db      'Stage 2 starting',13,10,0
 protmode_msg:   db      'Entering protected mode.',13,10,0
 a20_msg:        db      'Enabling A20',13,10,0
+memmap_msg:     db      'Getting memory map',13,10,0
 a20_fail_msg:   db      'Failed to set A20',13,10,0
 
 start2:
@@ -94,6 +108,10 @@ start2:
         call    enable_a20
 
         ;; Get memory map
+
+        mov     si,memmap_msg
+        call    bios_print
+        call    get_memmap
 
         ;; Display protected mode message
 
@@ -128,9 +146,10 @@ start_32bit:
         mov     ds,ax
         mov     ss,ax
         mov     es,ax
-        mov     esp,tos
+        mov     esp,stage2_tos
         
-        ;; Modify video memory
+        ;; Modify video memory to indicate that we're now in protected
+        ;; mode.
 
         mov     [0xb8000],dword 'P M '
 
@@ -151,10 +170,14 @@ nullsel:        equ     0x0000
 codesel:        equ     0x0008
 datasel:        equ     0x0010
 
-;;; Export selectors for C
+;;; Export constants for C.  You can't export constants as such to C,
+;;; we make them variables just for C to import.
 
-                global  codesel_var
+        global  codesel_var
 codesel_var:    dw      codesel
+
+        global  memmap_var
+memmap_var:     dd      memmap        
 
 ;;; The gtd descriptor points to, and gives the size of, the gdt.
 

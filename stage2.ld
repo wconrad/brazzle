@@ -2,7 +2,7 @@ OUTPUT_FORMAT("binary")
 ENTRY(start)
 SECTIONS
 {
-  . = 0x1000;
+  . = 0x2000;  /* Must match stage2_addr */
   .text : {
     *(.text)
     *(.rodata*)

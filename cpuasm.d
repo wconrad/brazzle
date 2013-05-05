@@ -1,0 +1,2 @@
+cpuasm.o: cpuasm.asm
+
