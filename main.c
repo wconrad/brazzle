@@ -6,6 +6,6 @@ int main() {
   vty_init();
   int_init();
   vty_puts("Hello, world...\n");
-  gp_fault();
+  int3();
   halt();
 }

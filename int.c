@@ -21,20 +21,6 @@ load_idt() {
   lidt(&idt_addr);
 }
 
-// Int 3 (#BP - Breakpoint) handler.
-
-void int3_handler() {
-  vty_puts("int 3\n");
-  halt();
-}
-
-// Int 8 (#DF - Double Fault) handler.
-
-void int8_handler() {
-  vty_puts("int 8\n");
-  halt();
-}
-
 // The registers pushed onto the stack by the CPU before calling the
 // stub.
 
@@ -61,6 +47,14 @@ typedef struct PACKED stub_registers {
   unsigned ecx;
   unsigned eax;
 } stub_registers_t;
+
+// Parameters passed to a handler which receives an error code.
+
+typedef struct PACKED trap_params {
+  stub_registers_t stub_registers;
+  unsigned error_code;
+  trap_registers_t trap_registers;
+} trap_params_t;
 
 // Parameters passed to a handler which receives an error code.
 
@@ -94,13 +88,38 @@ print_registers(const stub_registers_t * stub_registers,
   vty_puts("\n");
 }
 
+// Print information for a trap without an error code.
+
+void
+print_trap(const char * name,
+           trap_params_t * params) {
+  vty_printf("\n%s fault\n", name);
+  print_registers(&params->stub_registers, &params->trap_registers);
+}
+
 // Print information for a trap with an error code.
 
 void
 print_trap_with_error(const char * name,
                       trap_params_with_error_t * params) {
-  vty_printf("%s fault %04x\n", name, params->error_code);
+  vty_printf("\n%s fault %04x\n", name, params->error_code);
   print_registers(&params->stub_registers, &params->trap_registers);
+}
+
+// Int 3 (#BP - Breakpoint) handler.
+
+void
+int3_handler(trap_params_t params) {
+  print_trap("BP", &params);
+  halt();
+}
+
+// Int 8 (#DF - Double Fault) handler.
+
+void
+int8_handler(trap_params_with_error_t params) {
+  print_trap_with_error("DF", &params);
+  halt();
 }
 
 // Int 13 (#GP - General Protection) handler.
@@ -115,6 +134,6 @@ void
 int_init() {
   set_idt_entry(3, int3_stub, IDT_TRAP32);
   set_idt_entry(8, int8_stub, IDT_TRAP32);
-  set_idt_entry(13, int13_stub, IDT_TRAP32);
+  /* set_idt_entry(13, int13_stub, IDT_TRAP32); */
   load_idt();
 }
