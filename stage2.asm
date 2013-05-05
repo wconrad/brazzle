@@ -2,6 +2,10 @@
 
 	bits    16
 
+;;; Constants
+
+tos:    equ     0x1000          ;Top of stack -- just below stage2 loader
+
         section .text
         global  start
         extern  main
@@ -70,15 +74,15 @@ enable_a20:
         ret
 
 ;;; Strings
-
+	
 init_msg:       db      'Initializing',13,10,0
-protmode_msg:   db       'Entering protected mode.',13,10,0
+protmode_msg:   db      'Entering protected mode.',13,10,0
 a20_msg:        db      'Enabling A20',13,10,0
 a20_fail_msg:   db      'Failed to set A20',13,10,0
 
 start2:
 
-        ;; Display message
+        ;; Display init message
 
         mov     si,init_msg
         call    bios_print
@@ -89,7 +93,9 @@ start2:
         call    bios_print
         call    enable_a20
 
-        ;; Display message
+        ;; Get memory map
+
+        ;; Display protected mode message
 
         mov     si,protmode_msg
         call    bios_print
@@ -122,7 +128,7 @@ start_32bit:
         mov     ds,ax
         mov     ss,ax
         mov     es,ax
-        mov     esp,0x9000
+        mov     esp,tos
         
         ;; Modify video memory
 
