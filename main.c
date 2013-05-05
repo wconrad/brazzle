@@ -2,10 +2,9 @@
 #include "int.h"
 #include "vty.h"
 
-int main() {
+void main() {
   vty_init();
   int_init();
   vty_puts("Hello, world...\n");
-  int3();
   halt();
 }

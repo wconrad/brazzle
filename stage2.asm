@@ -184,5 +184,3 @@ gdt:
         db      0               ; base 24:31
 
 gdt_size:       equ     $ - gdt
-
-        end

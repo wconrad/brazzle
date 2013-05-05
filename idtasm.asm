@@ -27,5 +27,3 @@ sidt:
         pop     esi
         pop     ebp
         ret
-
-        end

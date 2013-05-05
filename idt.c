@@ -1,5 +1,5 @@
 #include "idt.h"
-#include "pgm.h"
+#include "stage2.h"
 
 idt_entry_t idt[IDT_SIZE];
 

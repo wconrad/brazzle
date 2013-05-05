@@ -14,10 +14,10 @@ run: build
 clean:
 	rm -f *.bin *.lst *.img *.o *.map
 
-hd.img: boot.bin pgm.bin
+hd.img: boot.bin stage2.bin
 	qemu-img create -f raw $@ 10M
 	dd conv=notrunc bs=512 if=boot.bin of=$@
-	dd conv=notrunc bs=512 if=pgm.bin of=$@ seek=1
+	dd conv=notrunc bs=512 if=stage2.bin of=$@ seek=1
 
 OBJ_FILES = \
 	conv.o \
@@ -32,8 +32,8 @@ OBJ_FILES = \
 	vid.o \
 	vty.o
 
-pgm.bin: pgm.o ${OBJ_FILES}
-	ld --script=pgm.ld --print-map -o pgm.bin $^ >pgm.map
+stage2.bin: stage2.o ${OBJ_FILES}
+	ld --script=stage2.ld --print-map -o stage2.bin $^ >stage2.map
 
 %.o: %.asm
 	nasm -f aout -o $@ -l $*.lst $<
