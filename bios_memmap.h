@@ -1,5 +1,5 @@
-#ifndef MEMMAP_H
-#define MEMMAP_H
+#ifndef BIOS_MEMMAP_H
+#define BIOS_MEMMAP_H
 
 // Print the BIOS memory map
 

@@ -1,6 +1,6 @@
 #include "cpu.h"
 #include "int.h"
-#include "memmap.h"
+#include "bios_memmap.h"
 #include "vty.h"
 
 void main() {

@@ -1,4 +1,4 @@
-#include "memmap.h"
+#include "bios_memmap.h"
 #include "nonstd.h"
 #include "vty.h"
 
