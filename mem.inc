@@ -5,10 +5,10 @@
 ;;; stored here while still in real mode, since you can't make BIOS calls
 ;;;  once in protected mode.
         
-memmap_entry_size:      equ     24
-memmap_max_entries:     equ     16
-memmap_entries:         equ     0x0500
-memmap:                 equ     0x0504
+bios_memmap_entry_size:      equ     24
+bios_memmap_max_entries:     equ     16
+bios_memmap_entries:         equ     0x0500
+bios_memmap:                 equ     0x0504
 
 ;;; stage2 loader and its stack
         

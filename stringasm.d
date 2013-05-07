@@ -1,0 +1,2 @@
+stringasm.o: stringasm.asm
+

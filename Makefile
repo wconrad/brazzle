@@ -21,6 +21,7 @@ hd.img: boot.bin stage2.bin
 	dd conv=notrunc bs=512 if=stage2.bin of=$@ seek=1
 
 OBJ_FILES = \
+	bmmap.o \
 	conv.o \
 	cpuasm.o \
 	idt.o \
@@ -28,9 +29,10 @@ OBJ_FILES = \
 	int.o \
 	intasm.o \
 	main.o \
-	bios_memmap.o \
+	pmmap.o \
 	sprintf.o \
 	string.o \
+	stringasm.o \
 	vid.o \
 	vty.o
 

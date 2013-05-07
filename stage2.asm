@@ -72,28 +72,28 @@ enable_a20:
         ret
 
 ;;; Get the memory map using the BIOS.
-;;; Stores it at memmap
+;;; Stores it at bios_memmap
 ;;; See:
 ;;;   * http://wiki.osdev.org/Detecting_Memory_%28x86%29#BIOS_Function:_INT_0x15.2C_EAX_.3D_0xE820
 
-get_memmap:                             
+get_bios_memmap:                             
 .magic: equ     'PAMS'                          ; 'MAPS'
-        mov     edi,memmap                      ; dest addr
+        mov     edi,bios_memmap                 ; dest addr
         xor     ebx,ebx                         ; continuation value
-        mov     dword [memmap_entries],0
+        mov     dword [bios_memmap_entries],0
 .again:
         mov     edx,.magic
         mov     eax,0xe820
-        mov     ecx,memmap_entry_size
+        mov     ecx,bios_memmap_entry_size
         int     15h
         jc      .done
         cmp     eax,.magic
         jne     .done
         test    ebx,ebx
         jz      .done
-        inc     dword [memmap_entries]
-        add     di,memmap_entry_size
-        cmp     dword [memmap_entries],memmap_max_entries
+        inc     dword [bios_memmap_entries]
+        add     di,bios_memmap_entry_size
+        cmp     dword [bios_memmap_entries],bios_memmap_max_entries
         jge     .done
         jmp     .again
 .done:
@@ -104,7 +104,7 @@ get_memmap:
 init_msg:       db      'Stage 2 starting',13,10,0
 protmode_msg:   db      'Entering protected mode.',13,10,0
 a20_msg:        db      'Enabling A20',13,10,0
-memmap_msg:     db      'Getting memory map',13,10,0
+bios_memmap_msg:db      'Getting memory map',13,10,0
 a20_fail_msg:   db      'Failed to set A20',13,10,0
 
 start2:
@@ -122,9 +122,9 @@ start2:
 
         ;; Get memory map
 
-        mov     si,memmap_msg
+        mov     si,bios_memmap_msg
         call    bios_print
-        call    get_memmap
+        call    get_bios_memmap
 
         ;; Display protected mode message
 
@@ -183,17 +183,17 @@ nullsel:        equ     0x0000
 codesel:        equ     0x0008
 datasel:        equ     0x0010
 
-;;; Export constants for C.  You can't export constants as such to C,
-;;; we make them variables just for C to import.
+;;; Export constants for C.  You can't export constants to C, but you
+;;; can export variables with constant values.
 
         global  codesel_var
-codesel_var:    dw      codesel
+codesel_var:                 dw      codesel
 
-        global  memmap_entries_ptr
-memmap_entries_ptr:     dd      memmap_entries
+        global  bios_memmap_entries_ptr
+bios_memmap_entries_ptr:     dd      bios_memmap_entries
 
-        global  memmap_ptr
-memmap_ptr:     dd      memmap
+        global  bios_memmap_ptr
+bios_memmap_ptr:             dd      bios_memmap
 
 ;;; The gtd descriptor points to, and gives the size of, the gdt.
 

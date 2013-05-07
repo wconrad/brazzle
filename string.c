@@ -20,14 +20,10 @@ memcpy_backward(void * dst, const void * src, unsigned size) {
   return dst;
 }
 
-// Copy size bytes from src to dest.  Regions may not overlap.
-
 void *
 memcpy(void * dst, const void * src, unsigned size) {
   return memcpy_forward(dst, src, size);
 }
-
-// Copy size bytes from src to dest.  Regions may overlap.
 
 void *
 memmove(void * dst, const void * src, unsigned size) {
@@ -36,9 +32,6 @@ memmove(void * dst, const void * src, unsigned size) {
   else
     return memcpy_backward(dst, src, size);
 }
-
-// Reverse a string in place.
-// Returns s.
 
 char *
 strrev(char * s) {
@@ -55,12 +48,17 @@ strrev(char * s) {
   return s;
 }
 
-// Return the length of a string.  Do not include the terminating NULL
-// in the length.
-
 unsigned strlen(const char * s) {
   unsigned length = 0;
   while (*s++ != '\0')
     length++;
   return length;
 }
+
+/* unsigned memset(void * s, unsigned long length, char value) { */
+/*   char * p = s; */
+/*   while(length != 0) { */
+/*     *p++ = value; */
+/*     length--; */
+/*   } */
+/* } */
