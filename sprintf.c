@@ -1,107 +1,33 @@
 #include <stdbool.h>
 
+#include "buffwrite.h"
 #include "conv.h"
 #include "sprintf.h"
 #include "string.h"
 
-// An output buffer cursor, used by sprintf and buffwrite to keep
-// track of the write pointer and the space remaining.
-
-typedef struct {
-  char * p;
-  int remaining;
-} buffer_cursor_t;
-
-// Write a character to a buffer.  If the buffer only has room for one
-// more character, write a '\0' instead.  If the buffer is full, do
-// nothing.
-
-static void buffwrite(buffer_cursor_t * cursor, char c) {
-  if(cursor->remaining <= 0)
-    return;
-  if(cursor->remaining == 1)
-    c = '\0';
-  *(cursor->p)++ = c;
-  cursor->remaining--;
-}
-
-// Format a signed integer
-
-static char *
-vprintf_signed(char * buffer, va_list *varargs) {
-  int n = va_arg(*varargs, int);
-  itodec(buffer, n);
-  return buffer;
-}
-
-// Format an unsigned integer
-
-static char *
-vprintf_unsigned(char * buffer, va_list *varargs) {
-  int n = va_arg(*varargs, int);
-  utodec(buffer, n);
-  return buffer;
-}
-
-// Format an unsigned integer as hexadecimal
-
-static char *
-vprintf_hex(char * buffer, va_list *varargs) {
-  int n = va_arg(*varargs, int);
-  utohex(buffer, n);
-  return buffer;
-}
-
-// Format an unsigned integer as binary
-
-static char *
-vprintf_bin(char * buffer, va_list *varargs) {
-  int n = va_arg(*varargs, int);
-  utobin(buffer, n);
-  return buffer;
-}
-
-// Format a pointer
-
-static char *
-vprintf_pointer(char * buffer, int buflen, va_list *varargs) {
-  int n = va_arg(*varargs, int);
-  sprintf(buffer, buflen, "0x%08x", n);
-  return buffer;
-}
-
-// Format a string.
-
-static char *
-vprintf_string(char * buffer, va_list * varargs) {
-  (void) buffer;
-  return va_arg(*varargs, char *);
-}
-
 // Write a string to the sink
-
-static void
-write_string_to_sink(vprintf_sink * sink, void * o, const char * s) {
+static void write_string_to_sink(vprintf_sink * sink,
+                                 void * o,
+                                 const char * s) {
   while (*s != '\0')
     sink(o, *s++);
 }
 
-static void
-vprintf_fill(vprintf_sink * sink,
-             void * o,
-             char fill_char,
-             unsigned min_width,
-             const char * converted) {
+// Write enough fill characters to make the field width come out to at
+// least min_width.
+static void vprintf_fill(vprintf_sink * sink,
+                         void * o,
+                         char fill_char,
+                         unsigned min_width,
+                         const char * converted) {
   unsigned converted_length = strlen(converted);
   while(converted_length < min_width) {
     sink(o, fill_char);
     converted_length++;
   }
-  
 }
 
 // Format a directive.  Returns the new formatp.
-
 static const char * 
 vprintf_directive(vprintf_sink * sink,
                   void * o,
@@ -118,8 +44,6 @@ vprintf_directive(vprintf_sink * sink,
     break;
   default:
     {
-      // buffer must be large enough for _any_ of the functions we
-      // pass it to.
       char buffer[64];
       char * converted;
       char fill_char = ' ';
@@ -134,22 +58,23 @@ vprintf_directive(vprintf_sink * sink,
       c = *formatp++;
       switch(c) {
       case 'b':
-        converted = vprintf_bin(buffer, varargs);
+        converted = utobin(buffer, sizeof(buffer), va_arg(*varargs, int));
         break;
       case 'd':
-        converted = vprintf_signed(buffer, varargs);
+        converted = itodec(buffer, sizeof(buffer), va_arg(*varargs, int));
         break;
       case 's':
-        converted = vprintf_string(buffer, varargs);
+        converted = va_arg(*varargs, char *);
         break;
       case 'u':
-        converted = vprintf_unsigned(buffer, varargs);
+        converted = utodec(buffer, sizeof(buffer), va_arg(*varargs, unsigned));
         break;
       case 'x':
-        converted = vprintf_hex(buffer, varargs);
+        converted = utohex(buffer, sizeof(buffer), va_arg(*varargs, int));
         break;
       case 'p':
-        converted = vprintf_pointer(buffer, sizeof(buffer), varargs);
+        snprintf(buffer, sizeof(buffer), "0x%08x", va_arg(*varargs, unsigned));
+        converted = buffer;
         break;
       default:
         buffer[0] = '%';
@@ -182,7 +107,6 @@ vprintf_directive(vprintf_sink * sink,
 // * x - Unsigned integer, hexadecimal
 // * p - Pointer
 // To print a % sign, use %%
-
 void vprintf(vprintf_sink * sink,
              void * o,
              const char * format,
@@ -200,9 +124,6 @@ void vprintf(vprintf_sink * sink,
   }
 }
 
-// Format taking a buffer and va_list.  See vsprintf for format
-// specifiers.
-
 void vsprintf(char * buff,
               int bufflen,
               const char * format,
@@ -211,10 +132,7 @@ void vsprintf(char * buff,
   vprintf((vprintf_sink *) buffwrite, &buffer_cursor, format, varargs);
 }
 
-// Formating taking a buffer and variable arguments.  See vsprintf for
-// format specifiers.
-
-void sprintf(char * buff, int bufflen, const char * format, ...) {
+void snprintf(char * buff, size_t bufflen, const char * format, ...) {
   va_list varargs;
   va_start(varargs, format);
   vsprintf(buff, bufflen, format, varargs);

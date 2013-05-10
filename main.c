@@ -4,6 +4,8 @@
 #include "pmmap.h"
 #include "vty.h"
 
+#include "conv.h"
+
 void main() {
   vty_init();
   int_init();

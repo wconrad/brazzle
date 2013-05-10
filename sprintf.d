@@ -1,1 +1,1 @@
-sprintf.o: sprintf.c conv.h sprintf.h string.h
+sprintf.o: sprintf.c buffwrite.h conv.h sprintf.h string.h

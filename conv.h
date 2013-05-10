@@ -1,37 +1,31 @@
 #ifndef CONV_H
 #define CONV_H
 
-// Conversion routines
-
-// Buffer lengths
-#define UTODEC_BUFF_LEN 11
-#define UTOHEX_BUFF_LEN 9
-#define ITODEC_BUFF_LEN 12
-#define UTOBIN_BUFF_LEN 33
+#include <stddef.h>
 
 // Convert an unsigned number to a decimal string.
-// buffer must be at least UTODEC_BUFF_LEN_HEX long.
+// Will write no more than buflen characters to the buffer,
+// including the terminating null.  Unless buflen is 0, the
+// buffer is guaranteed to be null terminated on return./
+
 // Returns the pointer to the buffer.
 
-char *utodec(char * buffer, unsigned n);
+char *utodec(char * buffer, size_t buflen, unsigned n);
 
 // Convert an unsigned number to a hex string.
-// buffer must be at least UTODEC_BUFF_LEN_HEX long.
-// Returns the pointer to the buffer.
+// Returns a pointer to the buffer.
 
-char *utohex(char * buffer, unsigned n);
+char *utohex(char * buffer, size_t buflen, unsigned n);
 
 // Convert an unsigned number to a binary string.
-// buffer must be at least UTOBIN_BUFF_LEN_HEX long.
 // Returns the pointer to the buffer.
 
-char *utobin(char * buffer, unsigned n);
+char *utobin(char * buffer, size_t buflen, unsigned n);
 
 // Convert a signed number to a decimal string.
-// buffer must be at least ITODEC_BUFF_LEN_DEC long.
 // Returns the pointer to the buffer.
 
-char *itodec(char * buffer, int n);
+char *itodec(char * buffer, size_t buflen, int n);
 
 // Convert a string to an unsigned integer.
 // On input, buffer points to a zero terminated string.

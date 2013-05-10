@@ -1,1 +1,1 @@
-conv.o: conv.c conv.h string.h
+conv.o: conv.c buffwrite.h conv.h string.h

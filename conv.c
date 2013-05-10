@@ -1,52 +1,57 @@
 #include <stdbool.h>
 
+#include <stddef.h>
+
+#include "buffwrite.h"
 #include "conv.h"
 #include "string.h"
 
 // Convert an unsigned number to a string.
 // radix may be between 2 and 16.
-// Returns the pointer to the buffer.
-
-static char *
-utoa(char * buffer, unsigned n, int radix) {
-  char * p = buffer;
+static void utoa(buffer_cursor_t * cursor,
+                 unsigned n,
+                 int radix) {
+  char * start = cursor->p;
   if(n == 0)
-    *p++ = '0';
+    buffwrite(cursor, '0');
   else
     while(n != 0) {
-      *p++ = "0123456789abcdef"[n % radix];
+      char c = "0123456789abcdef"[n % radix];
+      buffwrite(cursor, c);
       n /= radix;
     }
-  *p = '\0';
-  return strrev(buffer);
+  buffwrite(cursor, '\0');
+  strrev(start);
 }
 
-char *
-utodec(char * buffer, unsigned n) {
-  return utoa(buffer, n, 10);
+char * utodec(char * buffer, size_t buflen, unsigned n) {
+  buffer_cursor_t cursor = {.p = buffer, .remaining = buflen};
+  utoa(&cursor, n, 10);
+  return buffer;
 }
 
-char *
-utohex(char * buffer, unsigned n) {
-  return utoa(buffer, n, 16);
-}
-char *
-utobin(char * buffer, unsigned n) {
-  return utoa(buffer, n, 2);
+char * utohex(char * buffer, size_t buflen, unsigned n) {
+  buffer_cursor_t cursor = {.p = buffer, .remaining = buflen};
+  utoa(&cursor, n, 16);
+  return buffer;
 }
 
-char *
-itodec(char * buffer, int n) {
-  char * p = buffer;
-  bool neg = (n < 0);
+char * utobin(char * buffer, size_t buflen, unsigned n) {
+  buffer_cursor_t cursor = {.p = buffer, .remaining = buflen};
+  utoa(&cursor, n, 2);
+  return buffer;
+}
+
+char * itodec(char * buffer, size_t buflen, int n) {
+  buffer_cursor_t cursor = {.p = buffer, .remaining = buflen};
   unsigned u;
-  if(neg) {
-    *p++ = '-';
+  if(n < 0) {
+    buffwrite(&cursor, '-');
     u = -n;
   }
   else
     u = n;
-  utodec(p, u);
+  utoa(&cursor, u, 10);
   return buffer;
 }
 

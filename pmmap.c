@@ -153,11 +153,11 @@ pmmap_init() {
 void
 pmmap_print() {
   vty_puts("Physical memory map:\n");
-  vty_puts("  BLK #  BLOCKS     ADDR    BYTES USED\n");
+  vty_puts("  BLK #   BLOCKS      ADDR     BYTES  USED\n");
   int block_number = 0;
   while(block_number < PMMAP_BLOCKS) {
     int run_length = pmmap_run_length(block_number);
-    vty_printf("%7d %7d %08x %08x %d\n", block_number,
+    vty_printf("%7d  %7d  %08x  %08x  %d\n", block_number,
                run_length,
                pmmap_addr(block_number),
                pmmap_size(run_length),

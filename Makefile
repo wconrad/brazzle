@@ -22,6 +22,7 @@ hd.img: boot.bin stage2.bin
 
 OBJ_FILES = \
 	bmmap.o \
+	buffwrite.o \
 	conv.o \
 	cpuasm.o \
 	idt.o \
