@@ -1,0 +1,36 @@
+= The bootstrap process
+
+== BIOS
+
+The BIOS loads the boot sector, the first sector of the disk, at
+0x7c00 and jumps to it in real mode.
+
+== 1st stage loader (boot sector)
+
+The boot sector is loaded at address 0x7c00.  CS will typically be
+zero, but may be any value (for example, the BIOS might jump to
+0x07c0:0).
+
+The boot sector the 2nd stage loader from disk.  The 2nd stage loader
+is stored in sequential sectors starting at sector 1 (the sector
+immediately after the boot sector).  It is loaded at address 0:0x2000
+and jumped to.
+
+== 2nd stage loader (current)
+
+The second stage loader gathers information from the BIOS (such as the
+memory map) and stores it in low memory for later use by the kernel.
+It then switches to protected mode and starts the kernel, which is
+currently a part of the 2nd stage loader.
+
+== 2nd stage loader (future)
+
+The second stage loader gathers information from the BIOS (such as the
+memory map) and stores it in low memory for later use by the kernel.
+It then loads the kernel at 0x3000.  The kernel is stored on disk in
+sequential sectors starting at sector 100 (eventually, the kernel will
+be stored in a file in a regular file system; the 2nd stage loader
+will know how to read from the file system).
+
+After loading the kernel, the 2nd stage loader switches to protected
+mode.  It then moves the kernel to 0xc0000000 and jumps to it.

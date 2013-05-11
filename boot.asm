@@ -8,10 +8,10 @@
         bits    16
 
 ;;; The BIOS loads us at 0x00007c00, but with the segment register
-;;; nknown (it could be 0000:7c00, or 007c:0000, etc.)  Force
+;;; nknown (it could be 0000:7c00, or 007c0:0000, etc.)  Force
 ;;; the segment register to 0.
 
-        org     0x7c00
+        org     boot_addr
         jmp     0:start
 start:
 
@@ -81,7 +81,7 @@ loaded_msg:     db      'Loaded',13,10,0
 dap:    
         db      dap_size        ; size of packet
         db      0               ; always 0
-        dw      10              ; number of sectors to transfer
+        dw      loader_sectors  ; number of sectors to transfer
         dw      loader_addr     ; buffer offset
         dw      0               ; buffer segment
         dd      1               ; LBA (lower)

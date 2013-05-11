@@ -14,24 +14,6 @@ start:
         
         jmp     0:start2
 
-;;; Poke a char to the screen.  Simple debugging when nothing else
-;;; works.
-;;; 
-;;; in: al = character
-
-poke_screen:
-        push    ax
-        push    ds
-        push    ax
-        mov     ax,0xb800
-        mov     ds,ax
-        pop     ax
-        mov     ah,' '
-        mov     word [0],ax
-        pop     ds
-        pop     ax
-        ret
-
 ;;; Display NULL terminated string at ds:si
         
 bios_print:
@@ -109,6 +91,12 @@ a20_fail_msg:   db      'Failed to set A20',13,10,0
 
 start2:
 
+        ;; We're not prepared to handle interrupts, so disable them.
+        ;; They should already be disabled, courtesy of the boot
+        ;; sector, but let's make sure.
+
+        cli
+
         ;; Display init message
 
         mov     si,init_msg
@@ -134,11 +122,6 @@ start2:
         ;; Set the GDT
 
         lgdt    [gdt_descriptor]
-
-        ;; Leave interrupts disabled.  We're not prepared to handle
-        ;; them yet.
-
-        cli
 
         ;; Enter protected mode
 
