@@ -1,4 +1,4 @@
-; pgm.asm
+;;; loader.asm
 
         %include 'mem.inc'
 
@@ -9,7 +9,7 @@
         extern  main
 start: 
 
-        ;; The boot sector will load us at 0:stage2_addr
+        ;; The boot sector will load us at 0:loader_addr
         ;; CS, DS and ES will all be 0
         
         jmp     0:start2
@@ -159,7 +159,7 @@ start_32bit:
         mov     ds,ax
         mov     ss,ax
         mov     es,ax
-        mov     esp,stage2_tos
+        mov     esp,loader_tos
         
         ;; Modify video memory to indicate that we're now in protected
         ;; mode.

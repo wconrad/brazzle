@@ -15,10 +15,10 @@ run: build
 clean:
 	rm -f *.bin *.lst *.img *.o *.map
 
-hd.img: boot.bin stage2.bin
+hd.img: boot.bin loader.bin
 	qemu-img create -f raw $@ 10M
 	dd conv=notrunc bs=512 if=boot.bin of=$@
-	dd conv=notrunc bs=512 if=stage2.bin of=$@ seek=1
+	dd conv=notrunc bs=512 if=loader.bin of=$@ seek=1
 
 OBJ_FILES = \
 	bmmap.o \
@@ -37,8 +37,8 @@ OBJ_FILES = \
 	vid.o \
 	vty.o
 
-stage2.bin: stage2.o ${OBJ_FILES}
-	ld --script=stage2.ld --print-map -o stage2.bin $^ >stage2.map
+loader.bin: loader.o ${OBJ_FILES}
+	ld --script=loader.ld --print-map -o loader.bin $^ >loader.map
 
 NASM_OPTS = -o $@ -l $*.lst -MD $*.d
 

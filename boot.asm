@@ -28,7 +28,7 @@ start:
 ;;; Set up a stack
 
         cli
-        mov     ax,stage2_tos
+        mov     ax,loader_tos
         mov     ss,ax
         mov     sp,0
         sti
@@ -50,7 +50,7 @@ start:
 
 ;;; Branch to it
 
-        jmp     0:stage2_addr
+        jmp     0:loader_addr
 
 ;;; Display NULL terminated string at ds:si
         
@@ -82,7 +82,7 @@ dap:
         db      dap_size        ; size of packet
         db      0               ; always 0
         dw      10              ; number of sectors to transfer
-        dw      stage2_addr     ; buffer offset
+        dw      loader_addr     ; buffer offset
         dw      0               ; buffer segment
         dd      1               ; LBA (lower)
         dd      0               ; LBA (upper)

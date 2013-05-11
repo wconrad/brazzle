@@ -10,7 +10,7 @@ bios_memmap_max_entries:     equ     16
 bios_memmap_entries:         equ     0x0500
 bios_memmap:                 equ     0x0504
 
-;;; stage2 loader and its stack
+;;; loader and its stack
         
-stage2_addr     equ     0x2000          ; Must match stage2.ld
-stage2_tos      equ     stage2_addr
+loader_addr     equ     0x2000          ; Must match loader.ld
+loader_tos      equ     loader_addr

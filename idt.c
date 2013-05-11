@@ -1,5 +1,5 @@
 #include "idt.h"
-#include "stage2.h"
+#include "loader.h"
 
 idt_entry_t idt[IDT_SIZE];
 
