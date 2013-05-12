@@ -1,0 +1,68 @@
+# GDB Cheat Sheet
+
+## Starting QEMU and GDB
+
+To debug using GDB and QEMU, first start QEMU like this:
+
+    $ qemu qemu -hda hd.img -s -S
+
+* -s Open gdbserver on TCP port 1234
+* -S Don't start CPU at startup
+
+Then start GDB:
+
+    $ gdb
+
+And have gdb connect to qemu:
+
+    (gdb) target remote localhost:1234
+
+## GDB commands
+
+To breakpoint the boot sector:
+
+    (gdb) break *0x7c00
+
+To start:
+
+    (gdb) c
+
+To show registers
+
+    (gdb) info reg
+
+To disassemble an address
+
+    (gdb) x/i 0x7c00
+
+To disassemble at the program counter:
+
+    (gdb) x/i $pc
+
+To disassemble 10 instructions at the program counter:
+
+    (gdb) x/10i $pc
+
+To print the call stack
+
+    (gdb) bt
+
+To single-step, following CALLs
+
+    (gdb) stepi
+or
+    (gdb) si
+
+To single-step without following CALLs:
+
+    (gdb) nexti
+or
+    (gdb) ni
+
+To display an instruction on every breakpoint or single-step:
+
+    (gdb) display/i $pc
+
+## References:
+
+* http://wiki.osdev.org/How_Do_I_Use_A_Debugger_With_My_OS
