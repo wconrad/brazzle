@@ -1,7 +1,7 @@
 OUTPUT_FORMAT("binary")
 SECTIONS
 {
-  . = 0x3000;  /* Must match kernel_addr */
+  . = 0xc0000000;  /* Must match kernel_addr */
   .text : {
     *(.text)
     *(.rodata*)

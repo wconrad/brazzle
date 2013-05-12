@@ -13,8 +13,8 @@ zero, but may be any value (for example, the BIOS might jump to
 
 The boot sector the 2nd stage loader from disk.  The 2nd stage loader
 is stored in sequential sectors starting at sector 1 (the sector
-immediately after the boot sector).  It is loaded at address 0:0x2000
-and jumped to.
+immediately after the boot sector).  It is loaded into low memory and
+jumped to.
 
 == 2nd stage loader (current)
 
@@ -27,10 +27,12 @@ currently a part of the 2nd stage loader.
 
 The second stage loader gathers information from the BIOS (such as the
 memory map) and stores it in low memory for later use by the kernel.
-It then loads the kernel at 0x3000.  The kernel is stored on disk in
-sequential sectors starting at sector 100 (eventually, the kernel will
-be stored in a file in a regular file system; the 2nd stage loader
-will know how to read from the file system).
+It then loads the kernel at into low memory.  The kernel is stored on
+disk in sequential sectors starting at at an absolute LBA (eventually,
+the kernel will be stored in a file in a regular file system; the 2nd
+stage loader will know how to read from the file system).
 
 After loading the kernel, the 2nd stage loader switches to protected
-mode.  It then moves the kernel to 0xc0000000 and jumps to it.
+mode.  It enables paging, identity-mapping the lower 4MB, and mapping
+4MB of high memory to some available RAM.  It then moves the kernel to
+high memory and jumps to it.

@@ -42,11 +42,10 @@ bios_print:
 ;;; And: "A20 - a pain from the past":
 ;;;    http://www.win.tue.nl/~aeb/linux/kbd/A20.html
 ;;; 
-;;; Mine is a modern system, and I don't really care about the past.
-;;; Just get the BIOS to do it for us.
+;;; QEMU (and presumably, any reasonably modern system) has a BIOS
+;;; that will do it for us, so let it do the work.
 
 enable_a20:
-
 	mov     ax,0x2401
         int     0x15
         jnc     .no_error
@@ -190,11 +189,10 @@ start:
         or      al,1
         mov     cr0,eax
 
-        ;; Clear cache and set CS to the code selector
+        ;; Clear cache and set CS to the code selector.
         
         jmp     codesel:start_32bit
 start_32bit:
-
 	bits    32
 
         ;; Set data segments to data selector
@@ -211,9 +209,86 @@ start_32bit:
 
         mov     [0xb8000],dword 'P M '
 
+        ;; Initialize paging
+
+        call    init_paging
+
+        ;; Copy the kernel from low memory to high memory
+
+        call    move_kernel_to_high_memory
+
         ;; Start the kernel
 
-        jmp     kernel_load_addr
+        jmp     kernel_addr
+
+;;; Initialize paging.
+;;; Identity maps the first 4mb of memory.
+;;; Maps virtual 0xc000_00000 to 0x10_0000 (1MB)
+
+init_paging:
+.priv:  equ     0b11            ; writable + present
+
+        ;; Clear the page table.  A zero entry is not present.
+
+        mov     edi,ptd
+        xor     eax,eax
+        mov     ecx,ptd_entries
+        cld
+        rep     stosd
+
+        ;; Identity map page 0 (the first 4MB of memory)
+
+        mov     eax,0           ; address of first page
+        mov     edi,page_table_0
+        call    init_page_table
+
+        ;; Map page 768 (0xc000_0000) to 0x10_0000 (1MB)
+
+        mov     eax,0x100000
+        mov     edi,page_table_kernel
+        call    init_page_table
+
+        ;; Point the PDT to the page tables
+
+        mov     dword [ptd + 4 * 0],page_table_0 | .priv
+        mov     dword [ptd + 4 * kernel_pdt_idx],page_table_kernel | .priv
+
+        ;; Install the page table directory
+
+        mov     eax,ptd
+        mov     cr3,eax
+
+        ;; Enable paging
+
+        mov     eax,cr0
+        or      eax,0x80000000
+        mov     cr0,eax
+
+        ret
+
+;;; Initialize a page table to point to consecutive physical pages.
+;;; in: di = address of page table
+;;; in: ax = physical address of first page
+
+init_page_table:
+        or      eax,0b11        ; writable + present
+        mov     ecx,1024        ; Number of entries in a page table
+        cld
+.again:
+        stosd
+        add     eax,0x1000      ; Next page
+        loop    .again
+        ret
+
+;;; Copy the kernel from low memory to high memory
+
+move_kernel_to_high_memory:
+        mov     esi,kernel_load_addr
+        mov     edi,kernel_addr
+        mov     ecx,kernel_max_bytes
+        cld
+        rep     movsb
+        ret
 
 ;;; The gtd descriptor points to, and gives the size of, the gdt.
 

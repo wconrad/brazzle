@@ -26,8 +26,9 @@
 
 ;;; The EBDA is special, because it is in use even after switching to
 ;;; protected mode and should never be overwritten.  It is always
-;;; before 0xa0000 and is guaranteed to be no more than 0x20000
-;;; (128k) bytes long.
+;;; before 0xa0000 and is guaranteed to be no more than 0x20000 (128k)
+;;; bytes long.  In practice, it is usually much smaller (with QEMU it
+;;; is 4k).  We'll just give it all the berth it might need.
         
 ebda_start:     equ     0x80000
 
@@ -52,10 +53,23 @@ loader_sectors  equ     10              ; Number of sectors used by loader
 	
 loader_lba:     equ     1
 
+;;; The page table directory.  Uses 0x1000 bytes; must be 4k aligned.
+
+ptd:            equ     0x3000
+ptd_entries:    equ     1024
+
+;;; Page table 0.  Uses 0x1000 bytes; must be 4k aligned.
+
+page_table_0:   equ     0x4000
+
+;;; Kernel page table.  Used 0x1000 bytes; must be 4k aligned.
+
+page_table_kernel:      equ     0x5000
+
 ;;; Kernel load address.  The loader, when still in real mode, uses
 ;;; the BIOS to load the kernel here.  Must be on a segment boundary.
 
-kernel_load_addr:       equ     0x3000
+kernel_load_addr:       equ     0x6000  ; Must match kernel.ld
 kernel_max_addr:        equ     ebda_start
 kernel_max_bytes:       equ     kernel_max_addr - kernel_load_addr
 kernel_sectors:         equ     kernel_max_bytes / 512
@@ -72,5 +86,12 @@ boot_addr:      equ     0x7c00
 ;;; Kernel executation address.  After the loader switches to
 ;;; protected mode and enables page mapping, it moves the kernel to
 ;;; this virtual address.
+;;;
+;;; Must be on a 4MB boundary, because it must be mapped by a single
+;;; page table, and each page table maps 4MB.
+                        
+kernel_addr:    equ     0xc0000000
 
-kernel_addr:    equ     0xc000000
+;;; The index into page table directory of the kernel page table.
+        
+kernel_pdt_idx: equ     kernel_addr / 0x400000
