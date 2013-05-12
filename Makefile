@@ -15,12 +15,22 @@ run: build
 clean:
 	rm -f *.bin *.lst *.img *.o *.map
 
-hd.img: boot.bin loader.bin
+# Sector numbers for loader and kernel.  Must match corresponding
+# equates in mem.inc
+
+LOADER_LBA=1
+KERNEL_LBA=100
+
+hd.img: boot.bin loader.bin kernel.bin
 	qemu-img create -f raw $@ 10M
 	dd conv=notrunc bs=512 if=boot.bin of=$@
-	dd conv=notrunc bs=512 if=loader.bin of=$@ seek=1
+	dd conv=notrunc bs=512 if=loader.bin of=$@ seek=${LOADER_LBA}
+	dd conv=notrunc bs=512 if=kernel.bin of=$@ seek=${KERNEL_LBA}
 
-OBJ_FILES = \
+loader.bin: loader.o
+	ld --script=loader.ld --print-map -o loader.bin $^ >loader.map
+
+KERNEL_OBJ_FILES = \
 	bmmap.o \
 	buffwrite.o \
 	conv.o \
@@ -37,8 +47,8 @@ OBJ_FILES = \
 	vid.o \
 	vty.o
 
-loader.bin: loader.o ${OBJ_FILES}
-	ld --script=loader.ld --print-map -o loader.bin $^ >loader.map
+kernel.bin: kinit.o ${KERNEL_OBJ_FILES}
+	ld --script=kernel.ld --print-map -o kernel.bin $^ >kernel.map
 
 NASM_OPTS = -o $@ -l $*.lst -MD $*.d
 

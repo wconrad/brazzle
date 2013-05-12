@@ -1,2 +1,2 @@
-loader.o: loader.asm mem.inc
+loader.o: loader.asm mem.inc selectors.inc
 

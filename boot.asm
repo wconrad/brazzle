@@ -28,9 +28,9 @@ start:
 ;;; Set up a stack
 
         cli
-        mov     ax,loader_tos
+        xor     ax,ax
         mov     ss,ax
-        mov     sp,0
+        mov     sp,loader_tos
         sti
 
 ;;; Display boot message
@@ -48,8 +48,10 @@ start:
         mov     si,loaded_msg
         call    message
 
-;;; Branch to it
+;;; Branch to it, but first load the boot drive back into dl, since the loader will need it.
+;;; to load the kernel.
 
+        mov     dl,[bootdrv]
         jmp     0:loader_addr
 
 ;;; Display NULL terminated string at ds:si
@@ -71,7 +73,13 @@ bios_putc:
         int     0x10
         ret
 
+;;; The boot drive which the BIOS passed to the boot sector in dl.
+;;; This is given back to the BIOS when loading data from the disk.
+        
 bootdrv:        db      0
+
+;;; Strings
+        
 bootmsg:        db      'Loading',13,10,0
 loaded_msg:     db      'Loaded',13,10,0
 
@@ -84,7 +92,7 @@ dap:
         dw      loader_sectors  ; number of sectors to transfer
         dw      loader_addr     ; buffer offset
         dw      0               ; buffer segment
-        dd      1               ; LBA (lower)
+        dd      loader_lba      ; LBA (lower)
         dd      0               ; LBA (upper)
 dap_size: equ $ - dap
 

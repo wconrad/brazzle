@@ -1,20 +1,24 @@
 ;;; loader.asm
 
         %include 'mem.inc'
+        %include 'selectors.inc'
 
 	bits    16
 
         section .text
-        global  start
         extern  main
-start: 
 
-        ;; The boot sector will load us at 0:loader_addr
-        ;; CS, DS and ES will all be 0
+        ;; The boot sector will load us at 0:loader_addr.
+        ;; CS, DS and ES will all be 0.
+        ;; The boot drive will be in DL.
+        ;;
+        ;; The far jump to force CS to 0 CS is not strictly necessary,
+        ;; since the BIOS already did that.
         
-        jmp     0:start2
+        jmp     0:start
 
-;;; Display NULL terminated string at ds:si
+;;; Display NULL terminated string at ds:si using the BIOS.  Used for
+;;; progress messages.
         
 bios_print:
         lodsb
@@ -81,15 +85,63 @@ get_bios_memmap:
 .done:
         ret
 
+;;;  Poke a char to the screen.  Simple debugging when nothing else
+;;;  works.
+;;;
+;;;  in: al = character
+	
+poke_screen:
+	push    ax
+        push    ds
+        push    ax
+        mov     ax,0xb800
+        mov     ds,ax
+        pop     ax
+        mov     ah,' '
+        mov     word [0],ax
+        pop     ds
+        pop     ax
+        ret
+
+;;; Load the kernel from disk into low memory using the BIOS.
+
+load_kernel:
+
+        mov     ah,0x42                 ; read sectors, LBA mode
+        mov     dl,[bootdrv]            ; drive
+        mov     si,.dap                 ; disk address packet
+        int     0x13
+        ret
+
+;;; The disk address packet describes what to read and where to store
+;;; it.
+
+.dap:    
+        db      .dap_size               ; 0: size of packet
+        db      0                       ; 1: always 0
+        dw      kernel_sectors          ; 2: number of sectors to transfer
+        dw      kernel_load_addr        ; 4: buffer offset
+        dw      0                       ; 6: buffer segment
+        dd      kernel_lba              ; 8: LBA (lower)
+        dd      0                       ; 12: LBA (upper)
+.dap_size: equ $ - .dap
+
 ;;; Strings
 	
-init_msg:       db      'Stage 2 starting',13,10,0
+init_msg:       db      'Loader starting',13,10,0
 protmode_msg:   db      'Entering protected mode.',13,10,0
 a20_msg:        db      'Enabling A20',13,10,0
-bios_memmap_msg:db      'Getting memory map',13,10,0
+memmap_msg:     db      'Getting memory map',13,10,0
+load_msg:       db      'Loading kernel',13,10,0
 a20_fail_msg:   db      'Failed to set A20',13,10,0
 
-start2:
+
+;;; The boot drive which the boot sector passed to the loader in dl.
+;;; This is given back to the BIOS when loading data from the disk.
+        
+bootdrv:        db      0
+
+start:
 
         ;; We're not prepared to handle interrupts, so disable them.
         ;; They should already be disabled, courtesy of the boot
@@ -97,12 +149,20 @@ start2:
 
         cli
 
+        ;; Save the boot drive
+        mov     [bootdrv],dl
+
+        ;; The stack grows down from the loader.
+        
+        mov     esp,loader_tos
+
         ;; Display init message
 
         mov     si,init_msg
         call    bios_print
         
-        ;; Turn on A20
+        ;; Turn on A20.  This allows the A20 address line to be used,
+        ;; allowing all of memory to be addressed.
 
 	mov     si,a20_msg
         call    bios_print
@@ -110,21 +170,22 @@ start2:
 
         ;; Get memory map
 
-        mov     si,bios_memmap_msg
+        mov     si,memmap_msg
         call    bios_print
         call    get_bios_memmap
 
-        ;; Display protected mode message
+        ;; Load the kernel into low memory.  It won't yet be at its final address, so
+        ;; we'll move it after switching to protected mode.
 
-        mov     si,protmode_msg
+        mov     si,load_msg
         call    bios_print
-
-        ;; Set the GDT
-
-        lgdt    [gdt_descriptor]
+        call    load_kernel
 
         ;; Enter protected mode
 
+        mov     si,protmode_msg
+        call    bios_print
+        lgdt    [gdt_descriptor]
         mov     eax,cr0
         or      al,1
         mov     cr0,eax
@@ -142,41 +203,17 @@ start_32bit:
         mov     ds,ax
         mov     ss,ax
         mov     es,ax
-        mov     esp,loader_tos
+        mov     fs,ax
         
         ;; Modify video memory to indicate that we're now in protected
-        ;; mode.
+        ;; mode.  This won't last long enough to see it, if things go
+        ;; well.
 
         mov     [0xb8000],dword 'P M '
 
-        ;; call C main()
+        ;; Start the kernel
 
-        call     main
-
-        ;; main() should not return.  If it does, poke something into
-        ;; video memory and halt.
-
-        mov     [0xb8000],dword '( ) '
-	cli
-        hlt
-
-;;; Selectors
-
-nullsel:        equ     0x0000
-codesel:        equ     0x0008
-datasel:        equ     0x0010
-
-;;; Export constants for C.  You can't export constants to C, but you
-;;; can export variables with constant values.
-
-        global  codesel_var
-codesel_var:                 dw      codesel
-
-        global  bios_memmap_entries_ptr
-bios_memmap_entries_ptr:     dd      bios_memmap_entries
-
-        global  bios_memmap_ptr
-bios_memmap_ptr:             dd      bios_memmap
+        jmp     kernel_load_addr
 
 ;;; The gtd descriptor points to, and gives the size of, the gdt.
 
