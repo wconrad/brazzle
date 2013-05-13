@@ -1,6 +1,7 @@
 #ifndef BMMAP_H
 #define BMMAP_H
 
+#include <inttypes.h>
 #include "nonstd.h"
 
 // Values for bmmap_entry_t.type.  Any other types should be treated
@@ -13,17 +14,17 @@
 // AX=E820h
 
 typedef struct PACKED bmmap_entry {
-  unsigned base_addr_low;
-  unsigned base_addr_high;
-  unsigned length_low;
-  unsigned length_high;
-  unsigned type;
-  unsigned reserved;
+  uint32_t base_addr_low;
+  uint32_t base_addr_high;
+  uint32_t length_low;
+  uint32_t length_high;
+  uint32_t type;
+  uint32_t  reserved;
 } bmmap_entry_t;
 
 // Address of pointer to BIOS memory map.  Set by the stage 2 loader.
 
-extern int * bios_memmap_entries_ptr;
+extern int32_t * bios_memmap_entries_ptr;
 
 // Address of memory map.  Set by the stage 2 loader.
 
