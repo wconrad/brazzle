@@ -5,6 +5,7 @@
 #ifndef IDT_H
 #define IDT_H
 
+#include <inttypes.h>
 #include "nonstd.h"
 
 // IDT flags.  Or these together.
@@ -31,11 +32,11 @@
 // An IDT entry.  This directs an interrupt to a task gate, interrupt
 // gate, or trap gate.
 typedef struct PACKED idt_entry {
-  short offset_low;
-  short code_selector;
-  char unused;
-  unsigned char flags;
-  short offset_high;
+  uint16_t offset_low;
+  uint16_t code_selector;
+  uint8_t unused;
+  uint8_t flags;
+  uint16_t offset_high;
 } idt_entry_t;
 
 // The IDT's linear address and size.
@@ -43,7 +44,7 @@ typedef struct PACKED idt_entry {
 // addr must be the _linear_ (not segmented, not virtual) address of
 // the IDT
 typedef struct PACKED idt_addr {
-  unsigned short size;
+  uint16_t size;
   void * addr;
 } idt_addr_t;
 
