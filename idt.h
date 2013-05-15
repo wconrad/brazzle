@@ -55,8 +55,7 @@ typedef struct PACKED idt_addr {
 
 // The interrupt descriptor table (IDT).
 
-extern idt_entry_t
-idt[IDT_SIZE];
+extern idt_entry_t idt[IDT_SIZE];
 
 // Load the IDT register
 

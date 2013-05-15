@@ -1,7 +1,8 @@
 #include "idt.h"
 #include "loader.h"
+#include "nonstd.h"
 
-idt_entry_t idt[IDT_SIZE];
+idt_entry_t ALIGNED8 idt[IDT_SIZE];
 
 void
 set_idt_entry(int interrupt_number,
