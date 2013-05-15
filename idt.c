@@ -12,5 +12,5 @@ set_idt_entry(int interrupt_number,
   entry->code_selector = codesel_var;
   entry->unused = 0;
   entry->flags = flags;
-  entry->offset_high = (unsigned) &stub >> 16;
+  entry->offset_high = (unsigned) stub >> 16;
 }
