@@ -19,7 +19,6 @@
 #define IDT_RING3 (3 << 5)
 
 // Bits 4..0 are the gate type
-
 #define IDT_TASK_GATE   0x05
 #define IDT_INT16_GATE  0x06
 #define IDT_INT32_GATE  0xe0
@@ -27,12 +26,10 @@
 #define IDT_TRAP32_GATE 0x0f
 
 // Composite IDT flags
-
 #define IDT_TRAP32 (IDT_PRESENT | IDT_RING0 | IDT_TRAP32_GATE)
 
 // An IDT entry.  This directs an interrupt to a task gate, interrupt
 // gate, or trap gate.
-
 typedef struct PACKED idt_entry {
   short offset_low;
   short code_selector;
@@ -51,22 +48,16 @@ typedef struct PACKED idt_addr {
 } idt_addr_t;
 
 // The number of entries in the IDT (1..256)
-
 #define IDT_SIZE 17
 
 // The interrupt descriptor table (IDT).
-
 extern idt_entry_t idt[IDT_SIZE];
 
-// Load the IDT register
+// Load the IDT register.
+extern void lidt(const idt_addr_t * idt_addr);
 
-extern void
-lidt(const idt_addr_t * idt_addr);
-
-// Store the IDT register
-
-extern void
-sidt(idt_addr_t * idt_addr);
+// Store the IDT register.
+extern void sidt(idt_addr_t * idt_addr);
 
 // Set an IDT entry.
 // interrupt_number is 0...IDT_SIZE
@@ -74,10 +65,8 @@ sidt(idt_addr_t * idt_addr);
 // in assembly and specifically designed to accept the interrupt.
 // It must not be a C function.
 // flags is IDT_TRAP32, etc.
-
-void 
-set_idt_entry(int interrupt_number,
-              void (*stub)(),
-              int flags);
+void set_idt_entry(int interrupt_number,
+                   void (*stub)(),
+                   int flags);
 
 #endif
