@@ -1,3 +1,4 @@
+#include <inttypes.h>
 #include "cpu.h"
 #include "idt.h"
 #include "int.h"
@@ -17,7 +18,14 @@ extern void int13_stub();
 
 static void
 load_idt() {
-  idt_addr_t idt_addr = {.addr = &idt, .size = sizeof(idt) - 1};
+  // Ugly hack: addr must be a linear address; what we have in our
+  // hands is a virtual address.  Convert the address of the idt from
+  // virtual to linear by subtracting the kernel's virtual address and
+  // adding the kernel's linear address.
+  idt_addr_t idt_addr = {
+    .addr = ((uint8_t * ) (&idt)) - 0xc0000000 + 0x00100000,
+    .size = sizeof(idt) - 1,
+  };
   lidt(&idt_addr);
 }
 

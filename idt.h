@@ -43,7 +43,8 @@ typedef struct PACKED idt_entry {
 
 // The IDT's linear address and size.
 // The size is special: It's actually the size - 1.
-
+// addr must be the _linear_ (not segmented, not virtual) address of
+// the IDT
 typedef struct PACKED idt_addr {
   unsigned short size;
   void * addr;
