@@ -134,6 +134,6 @@ void
 int_init() {
   set_idt_entry(3, int3_stub, IDT_TRAP32);
   set_idt_entry(8, int8_stub, IDT_TRAP32);
-  /* set_idt_entry(13, int13_stub, IDT_TRAP32); */
+  set_idt_entry(13, int13_stub, IDT_TRAP32);
   load_idt();
 }
