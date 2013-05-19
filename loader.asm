@@ -253,6 +253,11 @@ init_paging:
         mov     dword [ptd + 4 * 0],page_table_0 | .priv
         mov     dword [ptd + 4 * kernel_pdt_idx],page_table_kernel | .priv
 
+        ;; Point the last PTE to the PDT itself.  This gives the PDT its own virtual
+        ;; address, which is useful when translating virtual addresses to linear.
+
+        mov     dword [ptd + 4 * 1023],ptd | .priv
+
         ;; Install the page table directory
 
         mov     eax,ptd

@@ -31,6 +31,7 @@ loader.bin: loader.o
 	ld --script=loader.ld --print-map -o loader.bin $^ >loader.map
 
 KERNEL_OBJ_FILES = \
+	addr.o \
 	bmmap.o \
 	buffwrite.o \
 	conv.o \
