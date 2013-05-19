@@ -4,7 +4,7 @@
 #include <inttypes.h>
 #include "nonstd.h"
 
-// Values for bmmap_entry_t.type.  Any other types should be treated
+// Values for BmmapEntry.type.  Any other types should be treated
 // as "reserved"
 
 #define BMMAP_TYPE_AVAILABLE 1
@@ -20,7 +20,7 @@ typedef struct PACKED bmmap_entry {
   uint32_t length_high;
   uint32_t type;
   uint32_t  reserved;
-} bmmap_entry_t;
+} BmmapEntry;
 
 // Address of pointer to BIOS memory map.  Set by the stage 2 loader.
 
@@ -28,7 +28,7 @@ extern int32_t * bios_memmap_entries_ptr;
 
 // Address of memory map.  Set by the stage 2 loader.
 
-extern bmmap_entry_t (*bios_memmap_ptr) [];
+extern BmmapEntry (*bios_memmap_ptr) [];
 
 
 // Intialize.  Call this before using this module.

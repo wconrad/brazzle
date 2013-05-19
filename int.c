@@ -22,7 +22,7 @@ load_idt() {
   // hands is a virtual address.  Convert the address of the idt from
   // virtual to linear by subtracting the kernel's virtual address and
   // adding the kernel's linear address.
-  idt_addr_t idt_addr = {
+  IdtAddr idt_addr = {
     .addr = ((uint8_t * ) (&idt)) - 0xc0000000 + 0x00100000,
     .size = sizeof(idt) - 1,
   };
@@ -36,7 +36,7 @@ typedef struct PACKED trap_registers {
   unsigned eip;
   unsigned cs;
   unsigned eflags;
-} trap_registers_t;
+} TrapRegisters;
 
 // The registers pushed onto the stack by the stub.
 
@@ -54,27 +54,27 @@ typedef struct PACKED stub_registers {
   unsigned edx;
   unsigned ecx;
   unsigned eax;
-} stub_registers_t;
+} StubRegisters;
 
 // Parameters passed to a handler which receives an error code.
 
 typedef struct PACKED trap_params {
-  stub_registers_t stub_registers;
+  StubRegisters stub_registers;
   unsigned error_code;
-  trap_registers_t trap_registers;
-} trap_params_t;
+  TrapRegisters trap_registers;
+} TrapParams;
 
 // Parameters passed to a handler which receives an error code.
 
-typedef struct PACKED trap_params_with_error {
-  stub_registers_t stub_registers;
+typedef struct PACKED {
+  StubRegisters stub_registers;
   unsigned error_code;
-  trap_registers_t trap_registers;
-} trap_params_with_error_t;
+  TrapRegisters trap_registers;
+} TrapParamsWithError;
 
 static void 
-print_registers(const stub_registers_t * stub_registers,
-                const trap_registers_t * trap_registers) {
+print_registers(const StubRegisters * stub_registers,
+                const TrapRegisters * trap_registers) {
   vty_printf(" eflags=%08x", trap_registers->eflags);
   vty_puts("\n");
   vty_printf(" eax=%08x", stub_registers->eax);
@@ -100,7 +100,7 @@ print_registers(const stub_registers_t * stub_registers,
 
 void
 print_trap(const char * name,
-           trap_params_t * params) {
+           TrapParams * params) {
   vty_printf("\n%s fault\n", name);
   print_registers(&params->stub_registers, &params->trap_registers);
 }
@@ -109,7 +109,7 @@ print_trap(const char * name,
 
 void
 print_trap_with_error(const char * name,
-                      trap_params_with_error_t * params) {
+                      TrapParamsWithError * params) {
   vty_printf("\n%s fault %04x\n", name, params->error_code);
   print_registers(&params->stub_registers, &params->trap_registers);
 }
@@ -117,7 +117,7 @@ print_trap_with_error(const char * name,
 // Int 3 (#BP - Breakpoint) handler.
 
 void
-int3_handler(trap_params_t params) {
+int3_handler(TrapParams params) {
   print_trap("BP", &params);
   halt();
 }
@@ -125,7 +125,7 @@ int3_handler(trap_params_t params) {
 // Int 8 (#DF - Double Fault) handler.
 
 void
-int8_handler(trap_params_with_error_t params) {
+int8_handler(TrapParamsWithError params) {
   print_trap_with_error("DF", &params);
   halt();
 }
@@ -133,7 +133,7 @@ int8_handler(trap_params_with_error_t params) {
 // Int 13 (#GP - General Protection) handler.
 
 void
-int13_handler(trap_params_with_error_t params) {
+int13_handler(TrapParamsWithError params) {
   print_trap_with_error("GP", &params);
   halt();
 }

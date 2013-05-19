@@ -11,7 +11,7 @@ void bmmap_print() {
              bios_memmap_ptr);
   vty_printf("ADDR LOW   ADDR HI   LEN LOW    LEN HI      TYPE  RESERVED\n");
   for(int i = 0; i < *bios_memmap_entries_ptr; i++) {
-    bmmap_entry_t * entry = &(*bios_memmap_ptr)[i];
+    BmmapEntry * entry = &(*bios_memmap_ptr)[i];
     vty_printf("%08x  %08x  %08x  %08x  %08x  %08x\n",
                entry->base_addr_low,
                entry->base_addr_high,

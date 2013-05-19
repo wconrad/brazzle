@@ -31,13 +31,13 @@
 
 // An IDT entry.  This directs an interrupt to a task gate, interrupt
 // gate, or trap gate.
-typedef struct PACKED idt_entry {
+typedef struct PACKED {
   uint16_t offset_low;
   uint16_t code_selector;
   uint8_t unused;
   uint8_t flags;
   uint16_t offset_high;
-} idt_entry_t;
+} IdtEntry;
 
 // The IDT's linear address and size.
 // The size is special: It's actually the size - 1.
@@ -46,19 +46,19 @@ typedef struct PACKED idt_entry {
 typedef struct PACKED idt_addr {
   uint16_t size;
   void * addr;
-} idt_addr_t;
+} IdtAddr;
 
 // The number of entries in the IDT (1..256)
 #define IDT_SIZE 17
 
 // The interrupt descriptor table (IDT).
-extern idt_entry_t idt[IDT_SIZE];
+extern IdtEntry idt[IDT_SIZE];
 
 // Load the IDT register.
-extern void lidt(const idt_addr_t * idt_addr);
+extern void lidt(const IdtAddr * idt_addr);
 
 // Store the IDT register.
-extern void sidt(idt_addr_t * idt_addr);
+extern void sidt(IdtAddr * idt_addr);
 
 // Set an IDT entry.
 // interrupt_number is 0...IDT_SIZE

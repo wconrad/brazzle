@@ -120,7 +120,7 @@ static void pmmap_mark_region(unsigned addr,
 
 static void pmmap_apply_bios_map_if(bool avail) {
   for(int i = 0; i < *bios_memmap_entries_ptr; i++) {
-    bmmap_entry_t * entry = &(*bios_memmap_ptr)[i];
+    BmmapEntry * entry = &(*bios_memmap_ptr)[i];
     if(avail != (entry->type == BMMAP_TYPE_AVAILABLE))
       continue;
     // We're not prepared to handle big memory (> 4GB)

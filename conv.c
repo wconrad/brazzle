@@ -8,7 +8,7 @@
 
 // Convert an unsigned number to a string.
 // radix may be between 2 and 16.
-static void utoa(buffer_cursor_t * cursor,
+static void utoa(BufferCursor * cursor,
                  unsigned n,
                  int radix) {
   char * start = cursor->p;
@@ -25,25 +25,25 @@ static void utoa(buffer_cursor_t * cursor,
 }
 
 char * utodec(char * buffer, size_t buflen, unsigned n) {
-  buffer_cursor_t cursor = {.p = buffer, .remaining = buflen};
+  BufferCursor cursor = {.p = buffer, .remaining = buflen};
   utoa(&cursor, n, 10);
   return buffer;
 }
 
 char * utohex(char * buffer, size_t buflen, unsigned n) {
-  buffer_cursor_t cursor = {.p = buffer, .remaining = buflen};
+  BufferCursor cursor = {.p = buffer, .remaining = buflen};
   utoa(&cursor, n, 16);
   return buffer;
 }
 
 char * utobin(char * buffer, size_t buflen, unsigned n) {
-  buffer_cursor_t cursor = {.p = buffer, .remaining = buflen};
+  BufferCursor cursor = {.p = buffer, .remaining = buflen};
   utoa(&cursor, n, 2);
   return buffer;
 }
 
 char * itodec(char * buffer, size_t buflen, int n) {
-  buffer_cursor_t cursor = {.p = buffer, .remaining = buflen};
+  BufferCursor cursor = {.p = buffer, .remaining = buflen};
   unsigned u;
   if(n < 0) {
     buffwrite(&cursor, '-');

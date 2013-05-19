@@ -128,7 +128,7 @@ void vsprintf(char * buff,
               int bufflen,
               const char * format,
               va_list varargs) {
-  buffer_cursor_t buffer_cursor = {.p = buff, .remaining = bufflen};
+  BufferCursor buffer_cursor = {.p = buff, .remaining = bufflen};
   vprintf((vprintf_sink *) buffwrite, &buffer_cursor, format, varargs);
 }
 

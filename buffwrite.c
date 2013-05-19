@@ -4,7 +4,7 @@
 // more character, write a '\0' instead.  If the buffer is full, do
 // nothing.
 
-void buffwrite(buffer_cursor_t * cursor, char c) {
+void buffwrite(BufferCursor * cursor, char c) {
   if(cursor->remaining <= 0)
     return;
   if(cursor->remaining == 1)

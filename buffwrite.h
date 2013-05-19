@@ -9,11 +9,11 @@
 typedef struct {
   char * p;
   int remaining;
-} buffer_cursor_t;
+} BufferCursor;
 
 // Write a character to a buffer.  If the buffer only has room for one
 // more character, write a '\0' instead.  If the buffer is full, do
 // nothing.
-void buffwrite(buffer_cursor_t * cursor, char c);
+void buffwrite(BufferCursor * cursor, char c);
 
 #endif

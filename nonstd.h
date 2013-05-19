@@ -13,7 +13,7 @@
 // Align a variable on an 8-byte boundary.
 //
 // use:
-//   idt_entry_t idt[32] ALIGNED8;
+//   IdtEntry idt[32] ALIGNED8;
 
 #define ALIGNED8 __attribute__ ((__aligned (8)))
 
