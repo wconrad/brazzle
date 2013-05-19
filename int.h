@@ -9,10 +9,10 @@ void int_init();
 
 // Cause an INT 3 (breakpoint)
 
-extern void int3();
+void int3();
 
-// Cause a GP (General Protection) fault
+// Cause a GP (General Protection) fault.
 
-extern void gp_fault();
+void gp_fault();
 
 #endif

@@ -30,7 +30,7 @@
 #define PTE_FRAME 0xfffff000
 
 // A physical (linear) address.
-typedef void * physical_address;
+typedef void * PhysicalAddress;
 
 // A virtual address.
 typedef void * virtual_address;
@@ -72,6 +72,6 @@ inline unsigned page_offset(virtual_address addr) {
 // entry mapped to itself.
 //
 // From: http://wiki.osdev.org/Paging
-physical_address get_physaddr(virtual_address virt_addr);
+PhysicalAddress get_physaddr(virtual_address virt_addr);
 
 #endif

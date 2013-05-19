@@ -1,7 +1,10 @@
+#include "int.h"
+
 #include <inttypes.h>
+
+#include "addr.h"
 #include "cpu.h"
 #include "idt.h"
-#include "int.h"
 #include "nonstd.h"
 #include "vty.h"
 
@@ -14,25 +17,10 @@ extern void int3_stub();
 extern void int8_stub();
 extern void int13_stub();
 
-// Set the IDT register to the IDT.
-
-static void
-load_idt() {
-  // Ugly hack: addr must be a linear address; what we have in our
-  // hands is a virtual address.  Convert the address of the idt from
-  // virtual to linear by subtracting the kernel's virtual address and
-  // adding the kernel's linear address.
-  IdtAddr idt_addr = {
-    .addr = ((uint8_t * ) (&idt)) - 0xc0000000 + 0x00100000,
-    .size = sizeof(idt) - 1,
-  };
-  lidt(&idt_addr);
-}
-
 // The registers pushed onto the stack by the CPU before calling the
 // stub.
 
-typedef struct PACKED trap_registers {
+typedef struct PACKED {
   unsigned eip;
   unsigned cs;
   unsigned eflags;
@@ -40,7 +28,7 @@ typedef struct PACKED trap_registers {
 
 // The registers pushed onto the stack by the stub.
 
-typedef struct PACKED stub_registers {
+typedef struct PACKED {
   unsigned gs;
   unsigned fs;
   unsigned es;
@@ -58,7 +46,7 @@ typedef struct PACKED stub_registers {
 
 // Parameters passed to a handler which receives an error code.
 
-typedef struct PACKED trap_params {
+typedef struct PACKED {
   StubRegisters stub_registers;
   unsigned error_code;
   TrapRegisters trap_registers;
@@ -72,9 +60,8 @@ typedef struct PACKED {
   TrapRegisters trap_registers;
 } TrapParamsWithError;
 
-static void 
-print_registers(const StubRegisters * stub_registers,
-                const TrapRegisters * trap_registers) {
+static void print_registers(const StubRegisters * stub_registers,
+                            const TrapRegisters * trap_registers) {
   vty_printf(" eflags=%08x", trap_registers->eflags);
   vty_puts("\n");
   vty_printf(" eax=%08x", stub_registers->eax);
@@ -97,49 +84,48 @@ print_registers(const StubRegisters * stub_registers,
 }
 
 // Print information for a trap without an error code.
-
-void
-print_trap(const char * name,
-           TrapParams * params) {
+static void print_trap(const char * name,
+                TrapParams * params) {
   vty_printf("\n%s fault\n", name);
   print_registers(&params->stub_registers, &params->trap_registers);
 }
 
 // Print information for a trap with an error code.
-
-void
-print_trap_with_error(const char * name,
-                      TrapParamsWithError * params) {
+static void print_trap_with_error(const char * name,
+                           TrapParamsWithError * params) {
   vty_printf("\n%s fault %04x\n", name, params->error_code);
   print_registers(&params->stub_registers, &params->trap_registers);
 }
 
 // Int 3 (#BP - Breakpoint) handler.
-
-void
-int3_handler(TrapParams params) {
+void int3_handler(TrapParams params) {
   print_trap("BP", &params);
   halt();
 }
 
 // Int 8 (#DF - Double Fault) handler.
-
-void
-int8_handler(TrapParamsWithError params) {
+void int8_handler(TrapParamsWithError params) {
   print_trap_with_error("DF", &params);
   halt();
 }
 
 // Int 13 (#GP - General Protection) handler.
-
-void
-int13_handler(TrapParamsWithError params) {
+void int13_handler(TrapParamsWithError params) {
   print_trap_with_error("GP", &params);
   halt();
 }
 
-void
-int_init() {
+// Set the IDT register to the IDT.
+
+static void load_idt() {
+  IdtAddr idt_addr = {
+    .addr = get_physaddr(idt),
+    .size = sizeof(idt) - 1,
+  };
+  lidt(&idt_addr);
+}
+
+void int_init() {
   set_idt_entry(3, int3_stub, IDT_TRAP32);
   set_idt_entry(8, int8_stub, IDT_TRAP32);
   set_idt_entry(13, int13_stub, IDT_TRAP32);

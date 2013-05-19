@@ -16,7 +16,7 @@ extern inline unsigned page_offset(virtual_address addr);
 // 0xfffff000 through 0xfffffff is into the page table directory
 // itself. //
 
-physical_address get_physaddr(virtual_address virt_addr)
+PhysicalAddress get_physaddr(virtual_address virt_addr)
 {
   unsigned pdindex = page_directory_index(virt_addr);
   unsigned ptindex = page_table_index(virt_addr);
