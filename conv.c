@@ -1,9 +1,6 @@
-#include <stdbool.h>
-
-#include <stddef.h>
+#include "conv.h"
 
 #include "buffwrite.h"
-#include "conv.h"
 #include "string.h"
 
 // Convert an unsigned number to a string.
