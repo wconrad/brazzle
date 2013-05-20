@@ -40,6 +40,7 @@ KERNEL_OBJ_FILES = \
 	idtasm.o \
 	int.o \
 	intasm.o \
+	init.o \
 	main.o \
 	pmmap.o \
 	sprintf.o \

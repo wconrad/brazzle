@@ -1,1 +1,1 @@
-main.o: main.c addr.h bmmap.h nonstd.h cpu.h int.h pmmap.h vty.h
+main.o: main.c addr.h bmmap.h nonstd.h cpu.h init.h pmmap.h vty.h
