@@ -22,11 +22,12 @@ typedef struct PACKED bmmap_entry {
   uint32_t  reserved;
 } BmmapEntry;
 
-// Address of pointer to BIOS memory map.  Set by the stage 2 loader.
+// Address of pointer to the number of entries in the BIOS memory map.
+// Set by the stage 2 loader.
 
 extern int32_t * bios_memmap_entries_ptr;
 
-// Address of memory map.  Set by the stage 2 loader.
+// Pointer to BIOS memory map.  Set by the stage 2 loader.
 
 extern BmmapEntry (*bios_memmap_ptr) [];
 

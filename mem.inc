@@ -38,7 +38,12 @@ ebda_start:     equ     0x80000
                                 
 bios_memmap_entry_size:         equ     24
 bios_memmap_max_entries:        equ     16
+                                ;; The address of the dword number of
+                                ;; entries stored in the BIOS memory
+                                ;; map
 bios_memmap_entries:            equ     0x0500
+                                ;; The address of the BIOS memory map
+                                ;; itself
 bios_memmap:                    equ     0x0504
 	
 ;;; The loader and its stack.  The BIOS needs plenty of stack; perhaps
