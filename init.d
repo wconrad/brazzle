@@ -1,1 +1,1 @@
-init.o: init.c init.h bmmap.h nonstd.h int.h pmmap.h vty.h
+init.o: init.c init.h int.h meminit.h vty.h

@@ -30,7 +30,6 @@ extern int32_t * bios_memmap_entries_ptr;
 
 extern BmmapEntry (*bios_memmap_ptr) [];
 
-
 // Intialize.  Call this before using this module.
 
 void bmmap_init();

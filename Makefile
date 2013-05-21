@@ -42,6 +42,7 @@ KERNEL_OBJ_FILES = \
 	intasm.o \
 	init.o \
 	main.o \
+	meminit.o \
 	pmmap.o \
 	sprintf.o \
 	string.o \
