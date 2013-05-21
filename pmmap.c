@@ -10,52 +10,67 @@
 // = 4GB / PMMAP_BLOCK_SIZE
 #define PMMAP_BLOCKS 0x00100000
 
+// Bits per pmmap entry.
+#define PMMAP_BITS 32
+
 // The physical map size, in dwords.
-#define PMMAP_SIZE (PMMAP_BLOCKS / 32)
+#define PMMAP_SIZE (PMMAP_BLOCKS / PMMAP_BITS)
 
 // Physical memory map.  This has one bit per block.  The first bit (bit 0) corresponds
 // to physical address 0.
-static unsigned pmmap[PMMAP_SIZE];
+static uint32_t pmmap[PMMAP_SIZE];
 
 // Return true if the block number is valid
 static bool valid_block_number(int block_number) {
   return block_number >= 0 && block_number < PMMAP_BLOCKS;
 }
 
+// Given a block number, return the block's index in pmmap.
+static int pmmap_index(int block_number) {
+  return block_number / PMMAP_BITS;
+}
+
+// Given a block number, return the block's bit number in pmmap.
+static int pmmap_bitnum(int block_number) {
+  return block_number % PMMAP_BITS;
+}
+
 // Set or clear a bit in the physical memory map.
-static void
-pmmap_set(int block_number) {
+// If the block number is out of range, does nothing.
+static void pmmap_set(int block_number) {
   if(!valid_block_number(block_number))
     return;
-  pmmap[block_number / 32] |= (1 << block_number % 32);  
+  pmmap[pmmap_index(block_number)] |= (1 << pmmap_bitnum(block_number));  
 }
 
 // Reset a bit in the physical memory map.
-static void
-pmmap_reset(int block_number) {
+// If the block number is out of range, does nothing.
+static void pmmap_reset(int block_number) {
   if(!valid_block_number(block_number))
     return;
-  pmmap[block_number / 32] &= ~(1 << block_number % 32);  
+  pmmap[pmmap_index(block_number)] &= ~(1 << pmmap_bitnum(block_number));  
 }
 
 // Set or reset a bit in the physical memory map
-static void
-pmmap_set_value(int block_number, bool set) {
+// If the block number is out of range, does nothing.
+static void pmmap_set_value(int block_number, bool set) {
   if(set)
     pmmap_set(block_number);
   else
     pmmap_reset(block_number);
 }
 
-// Test if a bit is set.
+// Test if a bit is set.  If the block number is out of range,
+// return false.
 static bool pmmap_test(int block_number) {
   if(!valid_block_number(block_number))
     return false;
-  return pmmap[block_number / 32] & (1 << block_number % 32);  
+  return pmmap[pmmap_index(block_number)] & (1 << pmmap_bitnum(block_number));  
 }
 
 // Return the size of the allocated or unallocated range starting at
-// first_block_number.
+// first_block_number.  If the block number is out of range,
+// return 0.
 static int pmmap_run_length(int first_block_number) {
   if(!valid_block_number(first_block_number))
     return 0;
@@ -73,7 +88,7 @@ static unsigned pmmap_addr(int block_number) {
 }
 
 // Return the number of bytes in a number of blocks
-static unsigned pmmap_size(int num_blocks) {
+static unsigned pmmap_bytes(int num_blocks) {
   return PMMAP_BLOCK_SIZE * num_blocks;
 }
 
@@ -114,7 +129,7 @@ void pmmap_print() {
     vty_printf("%7d  %7d  %08x  %08x  %d\n", block_number,
                run_length,
                pmmap_addr(block_number),
-               pmmap_size(run_length),
+               pmmap_bytes(run_length),
                pmmap_test(block_number));
     block_number += run_length;
   }
