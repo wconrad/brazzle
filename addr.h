@@ -5,6 +5,6 @@
 typedef void * PhysicalAddress;
 
 // A virtual address.
-typedef void * virtual_address;
+typedef void * VirtualAddress;
 
 #endif

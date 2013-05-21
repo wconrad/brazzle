@@ -5,6 +5,7 @@
 
 #include "bmmap.h"
 #include "pmmap.h"
+#include "page_table.h"
 
 // The physical address of the kernel, and its size in bytes.
 
@@ -20,7 +21,7 @@ static void apply_bios_map_if(bool avail) {
     // We're not prepared to handle big memory (> 4GB)
     if(entry->base_addr_high != 0 || entry->length_high != 0)
       continue;
-    pmmap_mark_region(entry->base_addr_low,
+    pmmap_mark_region((PhysicalAddress) entry->base_addr_low,
                       entry->length_low,
                       !avail);
   }
@@ -49,9 +50,18 @@ static void apply_bios_map() {
 
 // Mark as used the memory in which the kernel sits.
 static void mark_kernel_memory_used() {
-  pmmap_mark_region(kernel_phys_addr_var,
+  pmmap_mark_region((PhysicalAddress) kernel_phys_addr_var,
                     kernel_max_bytes_var,
                     true);
+}
+
+// Mark as used the pages used by the page directory and page tables
+static void mark_page_tables_used() {
+  for(int i = 0; i < PT_ENTRIES; i++) {
+    PhysicalAddress phys_addr = page_table_phys_addr(i);
+    if(phys_addr != PHYS_ADDR_NOT_MAPPED)
+      pmmap_mark_region(phys_addr, PT_BYTES, true);
+  }
 }
 
 void mem_init() {
@@ -59,4 +69,5 @@ void mem_init() {
   pmmap_init();
   apply_bios_map();
   mark_kernel_memory_used();
+  mark_page_tables_used();
 }

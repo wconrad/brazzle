@@ -111,14 +111,15 @@ static void pmmap_mark_all_unused() {
   pmmap_memset(0);
 }
 
-void pmmap_mark_region(unsigned addr,
+void pmmap_mark_region(PhysicalAddress addr,
                        unsigned length,
                        bool used) {
-  int block_number = addr / PMMAP_BLOCK_SIZE;
+  uint32_t addr_value = (uint32_t) addr;
+  int block_number = addr_value / PMMAP_BLOCK_SIZE;
   do {
     pmmap_set_value(block_number, used);
     block_number++;
-  } while(pmmap_addr(block_number) < addr + length);
+  } while(pmmap_addr(block_number) < addr_value + length);
 }
 
 void pmmap_init() {
