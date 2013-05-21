@@ -219,7 +219,7 @@ start_32bit:
 
         ;; Start the kernel
 
-        jmp     kernel_addr
+        jmp     kernel_virt_addr
 
 ;;; Initialize paging.
 ;;; Identity maps the first 4mb of memory.
@@ -242,9 +242,9 @@ init_paging:
         mov     edi,page_table_0
         call    init_page_table
 
-        ;; Map page 768 (0xc000_0000) to 0x10_0000 (1MB)
+        ;; Map the kernel's virtual virtual memory to its phsyical memory
 
-        mov     eax,0x100000
+        mov     eax,kernel_phys_addr
         mov     edi,page_table_kernel
         call    init_page_table
 
@@ -289,7 +289,7 @@ init_page_table:
 
 move_kernel_to_high_memory:
         mov     esi,kernel_load_addr
-        mov     edi,kernel_addr
+        mov     edi,kernel_virt_addr
         mov     ecx,kernel_max_bytes
         cld
         rep     movsb

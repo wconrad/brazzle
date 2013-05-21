@@ -30,10 +30,16 @@
 ;;; can export variables with constant values.
 
         global  codesel_var
-codesel_var:                 dw      codesel
+codesel_var:                    dw      codesel
 
         global  bios_memmap_entries_ptr
-bios_memmap_entries_ptr:     dd      bios_memmap_entries
+bios_memmap_entries_ptr:        dd      bios_memmap_entries
 
         global  bios_memmap_ptr
-bios_memmap_ptr:             dd      bios_memmap
+bios_memmap_ptr:                dd      bios_memmap
+
+        global  kernel_phys_addr_var
+kernel_phys_addr_var:           dd      kernel_phys_addr
+
+        global  kernel_max_bytes_var
+kernel_max_bytes_var:           dd      kernel_max_bytes

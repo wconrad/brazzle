@@ -83,15 +83,21 @@ kernel_lba:     equ     100
 
 boot_addr:      equ     0x7c00
 
-;;; Kernel executation address.  After the loader switches to
-;;; protected mode and enables page mapping, it moves the kernel to
-;;; this virtual address.
+;;; Kernel physical address.  The loader maps virtual address
+;;; kernel_addr to this physical address.
+;;; Must be on a page (4k) boundary.
+
+kernel_phys_addr:       equ     0x100000
+
+;;; Kernel virtual address.  After the loader switches to protected
+;;; mode and enables page mapping, it moves the kernel to this virtual
+;;; address.
 ;;;
 ;;; Must be on a 4MB boundary, because it must be mapped by a single
 ;;; page table, and each page table maps 4MB.
                         
-kernel_addr:    equ     0xc0000000
+kernel_virt_addr:       equ     0xc0000000
 
 ;;; The index into page table directory of the kernel page table.
         
-kernel_pdt_idx: equ     kernel_addr / 0x400000
+kernel_pdt_idx: equ     kernel_virt_addr / 0x400000

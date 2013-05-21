@@ -16,8 +16,12 @@
 // The physical map size, in dwords.
 #define PMMAP_SIZE (PMMAP_BLOCKS / PMMAP_BITS)
 
-// Physical memory map.  This has one bit per block.  The first bit (bit 0) corresponds
-// to physical address 0.
+// Physical memory map.  This has one bit per block.  The first bit
+// (bit 0) corresponds to physical address 0.  When a bit is clear,
+// that block of memory is available.  When a bit is set, that block
+// of memory is unavailable.  A block of memory is marked unavailable
+// either when it has been allocated and is in use, or when it should
+// never be allocated.
 static uint32_t pmmap[PMMAP_SIZE];
 
 // Return true if the block number is valid
@@ -35,7 +39,7 @@ static int pmmap_bitnum(int block_number) {
   return block_number % PMMAP_BITS;
 }
 
-// Set or clear a bit in the physical memory map.
+// Set (mark unavailable) a bit in the physical memory map.
 // If the block number is out of range, does nothing.
 static void pmmap_set(int block_number) {
   if(!valid_block_number(block_number))
@@ -43,16 +47,17 @@ static void pmmap_set(int block_number) {
   pmmap[pmmap_index(block_number)] |= (1 << pmmap_bitnum(block_number));  
 }
 
-// Reset a bit in the physical memory map.
-// If the block number is out of range, does nothing.
+// Reset (mark available) a bit in the physical memory map.  If the
+// block number is out of range, does nothing.
 static void pmmap_reset(int block_number) {
   if(!valid_block_number(block_number))
     return;
   pmmap[pmmap_index(block_number)] &= ~(1 << pmmap_bitnum(block_number));  
 }
 
-// Set or reset a bit in the physical memory map
-// If the block number is out of range, does nothing.
+// Set (mark unavailable) or reset (mark available) a bit in the
+// physical memory map.  If the block number is out of range, does
+// nothing.
 static void pmmap_set_value(int block_number, bool set) {
   if(set)
     pmmap_set(block_number);
@@ -60,11 +65,11 @@ static void pmmap_set_value(int block_number, bool set) {
     pmmap_reset(block_number);
 }
 
-// Test if a bit is set.  If the block number is out of range,
-// return false.
+// Test if a bit is set (that is, the block is unavailable).  If the
+// block number is out of range, return true (block unavailable).
 static bool pmmap_test(int block_number) {
   if(!valid_block_number(block_number))
-    return false;
+    return true;
   return pmmap[pmmap_index(block_number)] & (1 << pmmap_bitnum(block_number));  
 }
 

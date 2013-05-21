@@ -1,9 +1,15 @@
 #include "meminit.h"
 
+#include <inttypes.h>
 #include <stdbool.h>
 
 #include "bmmap.h"
 #include "pmmap.h"
+
+// The physical address of the kernel, and its size in bytes.
+
+extern uint32_t kernel_phys_addr_var;
+extern uint32_t kernel_max_bytes_var;
 
 // Apply BIOS memory map entries of a certain availability.
 static void apply_bios_map_if(bool avail) {
@@ -26,8 +32,8 @@ static void apply_bios_map_if(bool avail) {
 //
 // This handles the following odd situations that the BIOS memory map
 // could have:
-// * Regions that does not start on a page boundary
-// * Regions the size of which are not a multiple a page's size
+// * Regions that does not start on a block boundary
+// * Regions the size of which are not a multiple of the block size
 // * Overlapping regions with either the same type or different types
 // * Regions with unknown types
 // Whenever there is a doubt, a block of memory is marked used
@@ -41,8 +47,16 @@ static void apply_bios_map() {
   apply_bios_map_if(false);
 }
 
+// Mark as used the memory in which the kernel sits.
+static void mark_kernel_memory_used() {
+  pmmap_mark_region(kernel_phys_addr_var,
+                    kernel_max_bytes_var,
+                    true);
+}
+
 void mem_init() {
   bmmap_init();
   pmmap_init();
   apply_bios_map();
+  mark_kernel_memory_used();
 }
