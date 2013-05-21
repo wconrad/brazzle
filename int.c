@@ -2,7 +2,7 @@
 
 #include <inttypes.h>
 
-#include "addr.h"
+#include "page_table.h"
 #include "cpu.h"
 #include "idt.h"
 #include "nonstd.h"

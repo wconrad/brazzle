@@ -1,4 +1,5 @@
-#include "addr.h"
+#include "page_table.h"
+
 #include <inttypes.h>
 
 extern inline unsigned page_directory_index(virtual_address addr);
@@ -12,9 +13,10 @@ extern inline unsigned page_offset(virtual_address addr);
 // directory.
 // 
 // One level of indirection is thrown away, so that any address
-// from 0xffc00000 through 0xffffefff is into a page table, and
-// 0xfffff000 through 0xfffffff is into the page table directory
-// itself. //
+// from 0xffc00000 through 0xffffefff are a page table, and
+// 0xfffff000 through 0xfffffff are the page directory.
+//
+// From: http://wiki.osdev.org/Paging
 
 PhysicalAddress get_physaddr(virtual_address virt_addr)
 {

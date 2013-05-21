@@ -1,7 +1,7 @@
-#include "addr.h"
 #include "bmmap.h"
 #include "cpu.h"
 #include "init.h"
+#include "page_table.h"
 #include "pmmap.h"
 #include "vty.h"
 

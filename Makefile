@@ -31,18 +31,18 @@ loader.bin: loader.o
 	ld --script=loader.ld --print-map -o loader.bin $^ >loader.map
 
 KERNEL_OBJ_FILES = \
-	addr.o \
 	bmmap.o \
 	buffwrite.o \
 	conv.o \
 	cpuasm.o \
 	idt.o \
 	idtasm.o \
+	init.o \
 	int.o \
 	intasm.o \
-	init.o \
 	main.o \
 	meminit.o \
+	page_table.o \
 	pmmap.o \
 	sprintf.o \
 	string.o \
