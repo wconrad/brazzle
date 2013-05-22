@@ -35,6 +35,8 @@ KERNEL_OBJ_FILES = \
 	buffwrite.o \
 	conv.o \
 	cpuasm.o \
+	gdt.o \
+	gdtasm.o \
 	idt.o \
 	idtasm.o \
 	init.o \
@@ -44,6 +46,7 @@ KERNEL_OBJ_FILES = \
 	meminit.o \
 	page_table.o \
 	pmmap.o \
+	segment_descriptor.o \
 	sprintf.o \
 	string.o \
 	stringasm.o \

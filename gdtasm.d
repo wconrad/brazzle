@@ -1,0 +1,2 @@
+gdtasm.o: gdtasm.asm
+
