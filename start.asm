@@ -31,8 +31,6 @@
         mov     [0xb8000],dword '( ) '
         cli
         hlt
-
-	section         .bss
         
 ;;; Export constants for C.  You can't export constants to C, but you
 ;;; can export variables with constant values.
@@ -45,6 +43,8 @@ kernel_phys_addr_var:           dd      kernel_phys_addr
 
         global  kernel_max_bytes_var
 kernel_max_bytes_var:           dd      kernel_max_bytes
+
+	section         .bss
 
 ;;; The address of the loader data block
         global  loader_data_p
