@@ -1,1 +1,1 @@
-bmmap.o: bmmap.c bmmap.h nonstd.h vty.h
+bmmap.o: bmmap.c bmmap.h loader_data.h nonstd.h vty.h

@@ -3,9 +3,9 @@
 #include <inttypes.h>
 #include <stdbool.h>
 
-#include "bmmap.h"
-#include "pmmap.h"
+#include "loader_data.h"
 #include "page_table.h"
+#include "pmmap.h"
 
 // The physical address of the kernel, and its size in bytes.
 
@@ -14,8 +14,8 @@ extern uint32_t kernel_max_bytes_var;
 
 // Apply BIOS memory map entries of a certain availability.
 static void apply_bios_map_if(bool avail) {
-  for(int i = 0; i < *bios_memmap_entries_ptr; i++) {
-    BmmapEntry * entry = &(*bios_memmap_ptr)[i];
+  for(unsigned i = 0; i < loader_data.bios_memory_map.count; i++) {
+    BiosMemoryMapEntry * entry = loader_data.bios_memory_map.entries + i;
     if(avail != (entry->type == BMMAP_TYPE_AVAILABLE))
       continue;
     // We're not prepared to handle big memory (> 4GB)
@@ -65,7 +65,6 @@ static void mark_page_tables_used() {
 }
 
 void mem_init() {
-  bmmap_init();
   pmmap_init();
   apply_bios_map();
   mark_kernel_memory_used();

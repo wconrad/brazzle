@@ -1,2 +1,2 @@
-meminit.o: meminit.c meminit.h bmmap.h nonstd.h pmmap.h addr.h \
- page_table.h
+meminit.o: meminit.c meminit.h loader_data.h nonstd.h page_table.h addr.h \
+ pmmap.h

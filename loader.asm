@@ -63,9 +63,9 @@ enable_a20:
 
 get_bios_memmap:                             
 .magic: equ     'PAMS'                          ; 'MAPS'
-        mov     edi,bios_memmap                 ; dest addr
+        mov     edi,bios_memory_map_entries     ; dest addr
         xor     ebx,ebx                         ; continuation value
-        mov     dword [bios_memmap_entries],0
+        mov     dword [bios_memory_map_count],0
 .again:
         mov     edx,.magic
         mov     eax,0xe820
@@ -76,9 +76,9 @@ get_bios_memmap:
         jne     .done
         test    ebx,ebx
         jz      .done
-        inc     dword [bios_memmap_entries]
+        inc     dword [bios_memory_map_count]
         add     di,bios_memmap_entry_size
-        cmp     dword [bios_memmap_entries],bios_memmap_max_entries
+        cmp     dword [bios_memory_map_count],bios_memmap_max_entries
         jge     .done
         jmp     .again
 .done:
@@ -181,6 +181,8 @@ start:
         call    load_kernel
 
         ;; Enter protected mode
+        ;; We set up a temporary GDT that the kernel will redefine
+        ;; during its initialization
 
         mov     si,protmode_msg
         call    bios_print
@@ -217,8 +219,10 @@ start_32bit:
 
         call    move_kernel_to_high_memory
 
-        ;; Start the kernel
+        ;; Start the kernel, passing it the address of the loader data
+        ;; block
 
+	lea     eax,[loader_data]
         jmp     kernel_virt_addr
 
 ;;; Initialize paging.
@@ -329,3 +333,17 @@ gdt:
         db      0               ; base 24:31
 
 gdt_size:       equ     $ - gdt
+
+	section .bss
+
+;;; The loader data block, which contains data that is passed to the
+;;; kernel.  This must be consistent with the size and structure
+;;; of the LoaderData struct defined in loader_data.h
+
+bios_memmap_entry_size:         equ     24
+bios_memmap_max_entries:        equ     16
+
+loader_data:            equ     $
+bios_memory_map:        equ     $
+bios_memory_map_count:  resd    1
+bios_memory_map_entries:resb    bios_memmap_max_entries * bios_memmap_entry_size

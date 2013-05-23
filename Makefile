@@ -42,6 +42,7 @@ KERNEL_OBJ_FILES = \
 	init.o \
 	int.o \
 	intasm.o \
+	loader_data.o \
 	main.o \
 	meminit.o \
 	page_table.o \
@@ -53,7 +54,7 @@ KERNEL_OBJ_FILES = \
 	vid.o \
 	vty.o
 
-kernel.bin: kinit.o ${KERNEL_OBJ_FILES}
+kernel.bin: start.o ${KERNEL_OBJ_FILES}
 	ld --script=kernel.ld --print-map -o kernel.bin $^ >kernel.map
 
 NASM_OPTS = -o $@ -l $*.lst -MD $*.d

@@ -1,1 +1,1 @@
-pmmap.o: pmmap.c bmmap.h nonstd.h pmmap.h addr.h string.h vty.h
+pmmap.o: pmmap.c bmmap.h pmmap.h addr.h string.h vty.h

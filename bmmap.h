@@ -2,38 +2,6 @@
 #define BMMAP_H
 
 #include <inttypes.h>
-#include "nonstd.h"
-
-// Values for BmmapEntry.type.  Any other types should be treated
-// as "reserved"
-
-#define BMMAP_TYPE_AVAILABLE 1
-#define BMMAP_TYPE_RESERVED  2
-
-// An entry in the BIOS memory map, as returned by BIOS INT 15h,
-// AX=E820h
-
-typedef struct PACKED bmmap_entry {
-  uint32_t base_addr_low;
-  uint32_t base_addr_high;
-  uint32_t length_low;
-  uint32_t length_high;
-  uint32_t type;
-  uint32_t  reserved;
-} BmmapEntry;
-
-// Address of pointer to the number of entries in the BIOS memory map.
-// Set by the stage 2 loader.
-
-extern int32_t * bios_memmap_entries_ptr;
-
-// Pointer to BIOS memory map.  Set by the stage 2 loader.
-
-extern BmmapEntry (*bios_memmap_ptr) [];
-
-// Intialize.  Call this before using this module.
-
-void bmmap_init();
 
 // Print the BIOS memory map
 

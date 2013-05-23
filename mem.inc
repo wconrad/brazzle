@@ -31,20 +31,6 @@
 ;;; is 4k).  We'll just give it all the berth it might need.
         
 ebda_start:     equ     0x80000
-
-;;; Memory map.  BIOS Int 0x15, EAX=0xE820 memory map info is stored
-;;; here while still in real mode, since you can't make BIOS calls
-;;; once in protected mode.
-                                
-bios_memmap_entry_size:         equ     24
-bios_memmap_max_entries:        equ     16
-                                ;; The address of the dword number of
-                                ;; entries stored in the BIOS memory
-                                ;; map
-bios_memmap_entries:            equ     0x0500
-                                ;; The address of the BIOS memory map
-                                ;; itself
-bios_memmap:                    equ     0x0504
 	
 ;;; The loader and its stack.  The BIOS needs plenty of stack; perhaps
 ;;; as much as 0x1000 bytes.
