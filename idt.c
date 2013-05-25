@@ -1,5 +1,6 @@
 #include "idt.h"
-#include "loader.h"
+
+#include "gdt.h"
 #include "nonstd.h"
 
 IdtEntry idt[IDT_SIZE];
@@ -10,7 +11,7 @@ set_idt_entry(int interrupt_number,
               int flags) {
   IdtEntry * entry = idt + interrupt_number;
   entry->offset_low = (unsigned) stub & 0xffff;
-  entry->code_selector = codesel_var;
+  entry->code_selector = selector_for_index(CODESEL_INDEX);
   entry->unused = 0;
   entry->flags = flags;
   entry->offset_high = (unsigned) stub >> 16;

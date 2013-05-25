@@ -1,15 +1,8 @@
 #include "gdt.h"
 
-#include <inttypes.h>
-
 #include "nonstd.h"
 #include "page_table.h"
 #include "segment_descriptor.h"
-
-// GDT indices
-
-#define CODESEL_INDEX 1
-#define DATASEL_INDEX 2
 
 // The global descriptor table (GDT)
 static SegmentDescriptor gdt[3] ALIGNED8;
@@ -68,11 +61,6 @@ static void gdt_set() {
     sd_set_data(sd);
     sd_set_writable(sd);
   }
-}
-
-// Given a GDT index, return the selector
-static inline uint32_t selector_for_index(unsigned index) {
-  return index * 0x0008;
 }
 
 // Install the GDT so that the processor will use it.

@@ -35,9 +35,6 @@
 ;;; Export constants for C.  You can't export constants to C, but you
 ;;; can export variables with constant values.
 
-        global  codesel_var
-codesel_var:                    dw      codesel
-
         global  kernel_phys_addr_var
 kernel_phys_addr_var:           dd      kernel_phys_addr
 

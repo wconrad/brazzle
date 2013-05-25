@@ -7,9 +7,9 @@
 #include "vty.h"
 
 void init() {
-  vty_init();
-  int_init();
-  gdt_init();
   loader_data_init();
+  vty_init();
+  gdt_init();
+  int_init();
   mem_init();
 }
