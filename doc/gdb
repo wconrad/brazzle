@@ -4,7 +4,7 @@
 
 To debug using GDB and QEMU, first start QEMU like this:
 
-    $ qemu qemu -hda hd.img -s -S
+    $ qemu -hda hd.img -s -S
 
 * -s Open gdbserver on TCP port 1234
 * -S Don't start CPU at startup
