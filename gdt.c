@@ -48,11 +48,8 @@ static void mostly_set_descriptor(SegmentDescriptor * sd) {
   sd_set_code_or_data(sd);
 }
 
-// Initialize and install the gdt.  This sets up a copy of the GDT
-// That is pretty much identical to the one the loader set up.
-// The difference is that this one belongs to kernel memory, not the
-// loader; using this one will allow us to reclaim the loader's
-// memory.
+// Initialize and install the GDT to replace the temporary GDT set up
+// by the loader.
 static void gdt_set() {
   // Clear all GDT entries.  We'll leave entry 0 (select 0x0000, the
   // NULL selector) empty,
