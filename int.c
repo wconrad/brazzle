@@ -48,7 +48,6 @@ typedef struct PACKED {
 
 typedef struct PACKED {
   StubRegisters stub_registers;
-  unsigned error_code;
   TrapRegisters trap_registers;
 } TrapParams;
 
