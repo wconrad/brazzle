@@ -5,9 +5,6 @@
 
 void bmmap_print() {                                            
   vty_puts("BIOS memory map:\n");
-  vty_printf("%d entries at %p\n",
-             loader_data.bios_memory_map.count,
-             &loader_data.bios_memory_map.entries);
   vty_printf("       ADDR               LEN           TYPE    RESERVED\n");
   for(unsigned i = 0; i < loader_data.bios_memory_map.count; i++) {
     BiosMemoryMapEntry * entry = &loader_data.bios_memory_map.entries[i];

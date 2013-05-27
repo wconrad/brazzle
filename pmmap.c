@@ -3,14 +3,11 @@
 #include "string.h"
 #include "vty.h"
 
-// Block size.
-#define PMMAP_BLOCK_SIZE 0x1000
-
 // Number of blocks of physical memory to map.
 // = 4GB / PMMAP_BLOCK_SIZE
 #define PMMAP_BLOCKS 0x00100000
 
-// Bits per pmmap entry.
+// Bits per pmmap entry = number of bits in a uint32_t.
 #define PMMAP_BITS 32
 
 // The physical map size, in dwords.
@@ -55,22 +52,28 @@ static void pmmap_reset(int block_number) {
   pmmap[pmmap_index(block_number)] &= ~(1 << pmmap_bitnum(block_number));  
 }
 
-// Set (mark unavailable) or reset (mark available) a bit in the
-// physical memory map.  If the block number is out of range, does
-// nothing.
-static void pmmap_set_value(int block_number, bool set) {
-  if(set)
-    pmmap_set(block_number);
-  else
+// Set the status of a memory block.  If the block number is out of
+// range, does nothing.  If BlockStatus is unknown, also does nothing.
+static void pmmap_mark_block(int block_number, BlockStatus block_status) {
+  switch(block_status) {
+  case BLOCK_AVAIL:
     pmmap_reset(block_number);
+    break;
+  case BLOCK_UNAVAIL:
+    pmmap_set(block_number);
+    break;
+  }
 }
 
-// Test if a bit is set (that is, the block is unavailable).  If the
-// block number is out of range, return true (block unavailable).
-static bool pmmap_test(int block_number) {
+// Test whether or not a block is available.  If the
+// block number is out of range, return BLOCK_UNAVAIL.
+static BlockStatus pmmap_get_block_status(int block_number) {
   if(!valid_block_number(block_number))
     return true;
-  return pmmap[pmmap_index(block_number)] & (1 << pmmap_bitnum(block_number));  
+  if (pmmap[pmmap_index(block_number)] & (1 << pmmap_bitnum(block_number)))
+    return BLOCK_UNAVAIL;
+  else
+    return BLOCK_AVAIL;
 }
 
 // Return the size of the allocated or unallocated range starting at
@@ -79,17 +82,17 @@ static bool pmmap_test(int block_number) {
 static int pmmap_run_length(int first_block_number) {
   if(!valid_block_number(first_block_number))
     return 0;
-  bool first_value = pmmap_test(first_block_number);
+  BlockStatus first_status = pmmap_get_block_status(first_block_number);
   int next_block_number = first_block_number + 1;
   while(next_block_number < PMMAP_BLOCKS &&
-        pmmap_test(next_block_number) == first_value)
+        pmmap_get_block_status(next_block_number) == first_status)
     next_block_number++;
   return next_block_number - first_block_number;
 }
 
 // Return the address of a block
-static unsigned pmmap_addr(int block_number) {
-  return PMMAP_BLOCK_SIZE * block_number;
+static PhysicalAddress pmmap_addr(int block_number) {
+  return (PhysicalAddress) (PMMAP_BLOCK_SIZE * block_number);
 }
 
 // Return the number of bytes in a number of blocks
@@ -111,15 +114,27 @@ static void pmmap_mark_all_unused() {
   pmmap_memset(0);
 }
 
+// Translate a BlockStatus into a string
+static const char * pmmap_status_str(BlockStatus status) {
+  switch(status) {
+  case BLOCK_AVAIL:
+    return "AVAIL";
+  case BLOCK_UNAVAIL:
+    return "UNAVAIL";
+  default:
+    return "?";
+  }
+}
+
 void pmmap_mark_region(PhysicalAddress addr,
                        unsigned length,
-                       bool used) {
+                       BlockStatus status) {
   uint32_t addr_value = (uint32_t) addr;
   int block_number = addr_value / PMMAP_BLOCK_SIZE;
   do {
-    pmmap_set_value(block_number, used);
+    pmmap_mark_block(block_number, status);
     block_number++;
-  } while(pmmap_addr(block_number) < addr_value + length);
+  } while(pmmap_addr(block_number) < (PhysicalAddress) (addr_value + length));
 }
 
 void pmmap_init() {
@@ -128,15 +143,15 @@ void pmmap_init() {
 
 void pmmap_print() {
   vty_puts("Physical memory map:\n");
-  vty_puts("  BLK #   BLOCKS      ADDR     BYTES  USED\n");
+  vty_puts("  BLK #   BLOCKS      ADDR     BYTES  STATUS\n");
   int block_number = 0;
   while(block_number < PMMAP_BLOCKS) {
     int run_length = pmmap_run_length(block_number);
-    vty_printf("%7d  %7d  %08x  %08x  %d\n", block_number,
+    vty_printf("%7d  %7d  %08x  %08x  %s\n", block_number,
                run_length,
                pmmap_addr(block_number),
                pmmap_bytes(run_length),
-               pmmap_test(block_number));
+               pmmap_status_str(pmmap_get_block_status(block_number)));
     block_number += run_length;
   }
 }

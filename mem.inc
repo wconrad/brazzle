@@ -36,7 +36,7 @@ ebda_start:     equ     0x80000
 ;;; as much as 0x1000 bytes.
 	
 loader_addr     equ     0x2000          ; Must match loader.ld
-loader_tos      equ     loader_addr
+loader_tos      equ     loader_addr     ; Grows down
 loader_sectors  equ     10              ; Number of sectors used by loader
 
 ;;; The LBA of the loader on disk.  Must agree with the Makefile

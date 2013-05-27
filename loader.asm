@@ -192,6 +192,8 @@ start:
         mov     cr0,eax
 
         ;; Clear cache and set CS to the code selector.
+        ;; This must come immediately after the "move cr0..." instruction,
+        ;; according to Intel's documentation.
         
         jmp     codesel:start_32bit
 start_32bit:

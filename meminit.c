@@ -23,7 +23,7 @@ static void apply_bios_map_if(bool avail) {
       continue;
     pmmap_mark_region((PhysicalAddress) entry->base_addr_low,
                       entry->length_low,
-                      !avail);
+                      avail ? BLOCK_AVAIL : BLOCK_UNAVAIL);
   }
 }
 
@@ -52,7 +52,7 @@ static void apply_bios_map() {
 static void mark_kernel_memory_used() {
   pmmap_mark_region((PhysicalAddress) kernel_phys_addr_var,
                     kernel_max_bytes_var,
-                    true);
+                    BLOCK_UNAVAIL);
 }
 
 // Mark as used the pages used by the page directory and page tables
@@ -60,7 +60,7 @@ static void mark_page_tables_used() {
   for(int i = 0; i < PT_ENTRIES; i++) {
     PhysicalAddress phys_addr = page_table_phys_addr(i);
     if(phys_addr != PHYS_ADDR_NOT_MAPPED)
-      pmmap_mark_region(phys_addr, PT_BYTES, true);
+      pmmap_mark_region(phys_addr, PT_BYTES, BLOCK_UNAVAIL);
   }
 }
 
