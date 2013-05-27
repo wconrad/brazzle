@@ -33,4 +33,7 @@ void pmmap_mark_region(PhysicalAddress addr,
                        unsigned length,
                        BlockStatus status);
 
+// Allocate a block of memory.  Returns NO_PHYS_MEM if no memory is available.
+PhysicalAddress pmmap_alloc();
+
 #endif

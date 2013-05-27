@@ -91,7 +91,7 @@ static int pmmap_run_length(int first_block_number) {
 }
 
 // Return the address of a block
-static PhysicalAddress pmmap_addr(int block_number) {
+static inline PhysicalAddress pmmap_addr(int block_number) {
   return (PhysicalAddress) (PMMAP_BLOCK_SIZE * block_number);
 }
 
@@ -154,4 +154,16 @@ void pmmap_print() {
                pmmap_status_str(pmmap_get_block_status(block_number)));
     block_number += run_length;
   }
+}
+
+PhysicalAddress pmmap_alloc() {
+  static int block_number = 0;
+  for(int i = 0; i < PMMAP_BLOCKS; i++) {
+    if(pmmap_get_block_status(block_number) == BLOCK_AVAIL) {
+      pmmap_mark_block(block_number, BLOCK_UNAVAIL);
+      return pmmap_addr(block_number);
+    }
+    block_number = (block_number + 1) % PMMAP_BLOCKS;
+  }
+  return NO_PHYS_MEM;
 }
